@@ -158,34 +158,39 @@ public class PartyCommands {
     }
 
     private static PartyMessage parsePartyMessage(String msg) {
-        // Example message: Party > [MVP] Imparellel: dps // literally took this out of my logs
-        String[] parts = msg.split(" ");
-        if (parts.length < 4 || !parts[0].equals("Party") || !parts[1].equals(">")) {
+        // Only process if message starts with the party color code prefix
+        if (!msg.startsWith("§9Party §8>")) return null;
+
+        // Remove all color and formatting codes
+        msg = msg.replaceAll("§.", "");
+
+        int colonIndex = msg.indexOf(':');
+        if (colonIndex == -1) return null;
+
+        String beforeColon = msg.substring(0, colonIndex).trim();
+        String afterColon = msg.substring(colonIndex + 1).trim();
+
+        String[] parts = beforeColon.split(" ");
+        if (parts.length < 3 || !parts[0].equals("Party") || !parts[1].equals(">")) {
             return null;
         }
-        String playerName = "null";
-        String message = "";
-        int rankOffset = !parts[2].startsWith("[") || !parts[2].endsWith("]") ? 0 : 1; // pesky ranks
-        for(int i = 2 + rankOffset; i < parts.length; i++) {
-            if (i == 2 + rankOffset) {
-                playerName = parts[i];
-                playerName = cleanUsername(playerName);
-            } else {
-                message += parts[i] + " "; // dont forget rest of msg
-            }
-        }
-        return new PartyMessage(message.trim(), playerName);
-    }
 
+        // Find player name (after rank if present)
+        String playerName = parts[2];
+        if (playerName.startsWith("[")) {
+            if (parts.length < 4) return null;
+            playerName = parts[3];
+        }
+        playerName = cleanUsername(playerName);
+
+        return new PartyMessage(afterColon, playerName);
+    }
     public record PartyMessage(String message, String playerName) {}
 }
 /*
 
 
 §9Party §8> §b[MVP] Imparellel§f: dps
-
-
-Party > [MVP] Imparellel: dps
 
 
  */

@@ -96,10 +96,17 @@ public class Notif {
                     0xFFFFFFFF              // color (ARGB)
             );
 
+            // fancy text culling
             context.drawItem(new ItemStack(icon), 8, 8);
+            int maxWidth = 100;
+            String raw = description.getString();
+            int len = raw.length();
+            while (textRenderer.getWidth(Text.of(raw + "...")) > maxWidth && len > 0)
+                raw = raw.substring(0, --len);
+            Text toDraw = textRenderer.getWidth(description) > maxWidth ? Text.of(raw + "...") : description;
 
             context.drawText(textRenderer, title, 30, 7, 0xFFFFFF, false);
-            context.drawText(textRenderer, description, 30, 18, 0x888888, false);
+            context.drawText(textRenderer, toDraw, 30, 18, 0x888888, false);
         }
 
         @Override
