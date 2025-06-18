@@ -115,5 +115,4 @@ public final class TextUtils {
         }
         return result;
     }
-
 }

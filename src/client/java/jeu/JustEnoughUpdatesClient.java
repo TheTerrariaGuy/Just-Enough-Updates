@@ -1,5 +1,6 @@
 package jeu;
 
+import jeu.terralib.APIUtils;
 import jeu.terralib.CommandUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -8,15 +9,21 @@ import net.minecraft.client.option.KeyBinding;
 import org.lwjgl.glfw.GLFW;
 
 public class JustEnoughUpdatesClient implements ClientModInitializer {
-	public static String USERNAME;
+	public static String USERNAME, UUID;
 	private static KeyBinding myKeyBinding;
+
+
 	@Override
 	public void onInitializeClient() {
-		System.out.println("client loaded ... ...");
+		// Intialization of variables
+		System.out.println("[JEU] client loaded ...");
 		USERNAME = MinecraftClient.getInstance().getSession().getUsername();
 		System.out.println("Username: " + USERNAME);
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+		initUUID();
+
 		PartyCommands.init();
+
+		//TODO: API key handling, make backend for ts
 
 
 		// testing, remove later
@@ -37,5 +44,14 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 			}
 		});
 
+	}
+	private void initUUID(){
+		APIUtils.getUUID(USERNAME).thenAccept(uuid -> {
+			UUID = uuid;
+			System.out.println("UUID: " + UUID);
+		}).exceptionally(e -> {
+			System.err.println("Failed to get UUID: " + e.getMessage());
+			return null;
+		});
 	}
 }
