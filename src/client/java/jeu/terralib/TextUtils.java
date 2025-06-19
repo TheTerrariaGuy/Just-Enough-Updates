@@ -13,7 +13,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-// what do i even say here?      HOG RIDERRRRRR
+
 public final class TextUtils {
     public static MinecraftClient client;
 
@@ -99,13 +99,10 @@ public final class TextUtils {
         List<ChatHudLine.Visible> result = new ArrayList<>();
         if (startIndex < 0 || startIndex >= visible.size()) return result;
 
-        // Walk forward to the start of the entry (since index 0 is newest)
         int i = startIndex;
         while (i < visible.size() - 1 && !visible.get(i + 1).endOfEntry()) {
             i++;
         }
-
-        // Walk backward, collecting lines until endOfEntry is true
         int j = i;
         while (j >= 0) {
             ChatHudLine.Visible curr = visible.get(j);
