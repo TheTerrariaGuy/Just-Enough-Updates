@@ -26,10 +26,10 @@ public class PartyCommands {
     }};
     public static void init() {
         isLeader = false;
-        System.out.println("PartyCommands initialized, listening for party messages...");
+//        System.out.println("PartyCommands initialized, listening for party messages...");
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
             String msg = message.getString();
-            System.out.println("Received chat message: " + msg);
+//            System.out.println("Received chat message: " + msg);
             PartyMessage processed = parsePartyMessage(msg);
             if(processed != null){
                 System.out.println("Processed party message: " + processed.message + " | from " + processed.playerName);

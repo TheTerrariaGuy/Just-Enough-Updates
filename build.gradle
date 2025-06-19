@@ -1,7 +1,6 @@
 plugins {
 	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
-	id 'com.github.johnrengelman.shadow' version '8.1.1' // hope this works
 }
 
 version = project.mod_version
@@ -17,7 +16,10 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
-	maven { url "https://maven.shedaniel.me/" }
+	maven {
+		url "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
+	}
+//	maven { url "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 }
 
 loom {
@@ -44,8 +46,10 @@ dependencies {
 
 	implementation 'com.google.code.gson:gson:2.10.1'
 
-	implementation 'me.shedaniel.cloth:cloth-config-fabric:19.0.146'
+	// devauth
+	modImplementation 'me.djtheredstoner:DevAuth-fabric:1.2.1'
 }
+
 
 processResources {
 	inputs.property "version", project.version
@@ -95,13 +99,13 @@ publishing {
 	}
 }
 
-shadowJar {
-	archiveBaseName.set("Just-Enough-Updates")
-	archiveVersion.set(project.version)
-	archiveClassifier.set("")
-	relocate 'me.shedaniel.cloth', 'com.terralib.jeu.cloth' // something something avoid namespace conflicts
+tasks.register('copyJarToMods', Copy) {
+	dependsOn remapJar
+	from remapJar.archiveFile
+	into "${System.getProperty("user.home")}/AppData/Roaming/.minecraft/mods"
+	rename { fileName ->
+		"mymod.jar"
+	}
 }
 
-build.dependsOn(shadowJar)
-
-jar.enabled = false
+build.finalizedBy(copyJarToMods)
