@@ -6,7 +6,8 @@
 		"ExampleClientMixin",
 		"ChatHudMixin",
 		"ChatHudAccessor",
-		"PartyFinderStatsMixin"
+		"PartyFinderStatsMixin",
+		"TabParserMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -1,5 +1,6 @@
 package jeu.mixin.client;
 
+import jeu.JustEnoughUpdatesClient;
 import jeu.terralib.Notif;
 import jeu.terralib.TextUtils;
 import net.minecraft.client.MinecraftClient;
@@ -16,9 +17,11 @@ public class ChatHudMixin {
     // text copy wowowowow so useful
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+//        System.out.println(JustEnoughUpdatesClient.mixinEnabled.get("ChatHudMixin"));
+        if(!JustEnoughUpdatesClient.mixinEnabled.get("ChatHudMixin")) return;
         if (!(MinecraftClient.getInstance().currentScreen instanceof ChatScreen)) return;
 
-        System.out.println("mouseClicked: " + mouseX + ", " + mouseY + ", button: " + button);
+//        System.out.println("mouseClicked: " + mouseX + ", " + mouseY + ", button: " + button);
 
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT &&
                 InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL)) {

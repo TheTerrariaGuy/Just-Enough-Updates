@@ -2,9 +2,10 @@ package jeu.mixin.client;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import jeu.PartyCommands;
+import jeu.JustEnoughUpdatesClient;
 import jeu.terralib.APIUtils;
 import jeu.terralib.CommandUtils;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.text.HoverEvent;
@@ -21,8 +22,13 @@ import java.util.Map;
 public class PartyFinderStatsMixin {
     @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
     public void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
-        // determine the party finder message later
+        if (!MinecraftClient.getInstance().isOnThread()) {
+            System.out.println("not on thread");
+            return; // Only proceed on the render thread
+        }
+        if(!JustEnoughUpdatesClient.mixinEnabled.get("PartyFinderStatsMixin")) return;
         String message = packet.content().getString().replaceAll("§.", ""); // remove pesky color codes
+        System.out.println(message);
         if(message.startsWith("Party Finder >") && message.contains(" has joined the dungeon group!")) {
             String[] parts = message.split(" ");
             String username = parts[3].contains("[") ? parts[4] : parts[3]; // wowwowowow so fancy, hopefully nothing breaks since im observing packets
@@ -37,7 +43,7 @@ public class PartyFinderStatsMixin {
                         - Total secret count across all profiles
                         - Total runs across all profiles
                         */
-                        String text = "§l§6Player Data for " + username + ": §r\n";
+                        String text = "§6§lPlayer Data for " + username + ": §r\n";
                         int totalSecrets = 0; // total secrets across all profiles
                         HashMap<Integer, Integer> normalRuns = new HashMap<>(); // normal floor runs
                         HashMap<Integer, Integer> masterRuns = new HashMap<>(); // master floor runs
@@ -75,7 +81,7 @@ public class PartyFinderStatsMixin {
                         }
                         String[] colors = new String[]{"§4", "§c", "§6", "§e", "§2", "§a"}; // 6 colors :sob:
                         int[] stages = new int[]{0, 500, 2500, 10000, 25000, 50000}; // stages for colors
-                        String color = "§f"; // white, if this shows up somehting went wrong
+                        String color = "§f"; // white, if this shows up something went wrong
                         for (int i = 0; i < stages.length; i++) {
                             if(stages[i] > totalSecrets) {
                                 color = colors[i];
@@ -85,8 +91,8 @@ public class PartyFinderStatsMixin {
                                 color = colors[i]; // max color
                             }
                         }
-                        text += color + "Secrets: " + totalSecrets + "\n"; // 50k secrets is the max
-                        text += "§l§6Completions: §r" + "\n";
+                        text += color + "Secrets: " + totalSecrets + "\n \n"; // 50k secrets is the max
+                        text += "§6§lCompletions: §r" + "\n";
                         text += "§2Normal Floors";
                         for (int i = 1; i <= 7; i++) {
                             if (normalRuns.containsKey(i)) {
@@ -101,6 +107,7 @@ public class PartyFinderStatsMixin {
                         }
                         text += " |";
 
+//                        System.out.println(chatText);
                         HoverEvent event = new HoverEvent.ShowText(Text.literal(text));
                         Text finaltext = Text.literal(chatText).setStyle(Text.literal(chatText).getStyle().withHoverEvent(event));
                         CommandUtils.send(finaltext);

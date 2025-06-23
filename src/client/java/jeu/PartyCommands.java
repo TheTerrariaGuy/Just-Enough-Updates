@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 public class PartyCommands {
     public static boolean isLeader;
+    private static boolean enabled;
     private static final HashMap<Integer, String> FLOORIDS = new HashMap<>() {{
         put(0, "ENTRANCE");
         put(1, "FLOOR_ONE");
@@ -24,16 +25,28 @@ public class PartyCommands {
         put(4, "FIERY");
         put(5, "INFERNAL");
     }};
+
+    public static void dinit(){
+        enabled = false;
+    }
+    public static void on(){
+        enabled = true;
+    }
+
     public static void init() {
-        isLeader = false;
+        enabled = true;
+        isLeader = true;
 //        System.out.println("PartyCommands initialized, listening for party messages...");
+
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
+            if(!enabled) return;
             String msg = message.getString();
 //            System.out.println("Received chat message: " + msg);
             PartyMessage processed = parsePartyMessage(msg);
+            msg = msg.replace("§.", "");
             if(processed != null){
                 System.out.println("Processed party message: " + processed.message + " | from " + processed.playerName);
-                System.out.println("Is leader: " + isLeader);
+//                System.out.println("Is leader: " + isLeader);
                 /*
                     ===== Party Commands =====
                     - !ptme - transfer party to me
@@ -138,31 +151,52 @@ public class PartyCommands {
 
 
             }
-            if(message.toString().matches("^The party was transferred to ([A-Za-z0-9_]{1,16})\\.$\n")){
+            if(msg.matches("^The party was transferred to (.{1,50})\\..*")){
                 // im such a good coder
+                System.out.println("Party transfer message detected, setting isLeader");
                 String username = message.getString().replace("The party was transferred to ", "").replace(".", "").replace(" ", "");
                 username = cleanUsername(username); // paranoia
                 isLeader = username.equals(JustEnoughUpdatesClient.USERNAME);
             }
-            if(message.toString().matches("^([A-Za-z0-9_]{1,16}) has promoted ([A-Za-z0-9_]{1,16}) to Party Leader\\.$")){
-                String username = message.toString().split("has promoted")[1].replace("to Party Leader", "").replace(" ", ""); // the person who got promoted
+            if(msg.matches("^(.{1,50}) has promoted (.{1,50}) to Party Leader\\.$")){
+                System.out.println("Party transfer message detected, setting isLeader");
+                String username = msg.split("has promoted")[1].replace("to Party Leader", "").replace(" ", ""); // the person who got promoted
                 username = cleanUsername(username);
                 isLeader = username.equals(JustEnoughUpdatesClient.USERNAME);
             }
+            if(msg.matches("^You have joined (.{1,50})'s party!$")){
+                System.out.println("Joined party message detected, setting isLeader to false");
+                isLeader = false;
+            }
+            if(msg.matches("^You have left the party!$")){
+                System.out.println("Left party message detected, setting isLeader to true");
+                isLeader = true;
+            }
+            if(msg.matches("^You are not this party's leader!$")){
+                System.out.println("Not party leader message detected, setting isLeader to false");
+                isLeader = false;
+            }
+
         });
     }
 
     private static String cleanUsername(String username) {
         // Remove any leading or trailing whitespace and special characters
+        String[] parts = username.split(" ");
+        if(parts.length > 1) {
+            // If there are multiple parts, join them with a single space
+            username = parts[parts.length-1]; // in case of ranks
+        }
         return username.trim().replaceAll("[^A-Za-z0-9_]", "");
     }
 
     private static PartyMessage parsePartyMessage(String msg) {
         // Only process if message starts with the party color code prefix
-        if (!msg.startsWith("§9Party §8>")) return null;
+
 
         // Remove all color and formatting codes
         msg = msg.replaceAll("§.", "");
+        if (!msg.startsWith("Party >")) return null;
 
         int colonIndex = msg.indexOf(':');
         if (colonIndex == -1) return null;

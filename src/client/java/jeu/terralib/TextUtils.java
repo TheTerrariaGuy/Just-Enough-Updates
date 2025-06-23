@@ -4,14 +4,12 @@ import jeu.mixin.client.ChatHudAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 public final class TextUtils {
@@ -24,39 +22,51 @@ public final class TextUtils {
         client = MinecraftClient.getInstance();
     }
 
-    public record ColoredSegment(String text, TextColor color) {
-    }
-
-    public static List<ColoredSegment> flatten(Text text) {
-        List<ColoredSegment> result = new ArrayList<>();
-        Deque<Text> stack = new LinkedList<>();
-        stack.push(text);
-
-        while (!stack.isEmpty()) {
-            Text current = stack.pop();
-            TextColor color = current.getStyle().getColor();
-            result.add(new ColoredSegment(current.getString(), color));
-
-            List<Text> children = current.getSiblings();
-            for (int i = children.size() - 1; i >= 0; i--) {
-                stack.push(children.get(i));
+    public static ArrayList<Text> splitByLines(Text text) {
+        Stack<Text> linesStack = new Stack<>();
+        Text[] siblings = text.getSiblings().toArray(new Text[0]);
+        ArrayList<Text> lines = new ArrayList<>();
+        for (int i = 0; i < siblings.length; i++) {
+            if(siblings[i].getString().equals("\n")){
+                MutableText line = Text.empty();
+                while (!linesStack.isEmpty()) {
+                    line.append(linesStack.pop());
+                }
+                lines.add(line);
+            }else{
+                linesStack.push(siblings[i]);
             }
         }
-
-        return result;
-    }
-
-    public static boolean matches(List<ColoredSegment> segments, List<ColoredSegment> pattern) {
-        if (segments.size() < pattern.size()) return false;
-        for (int i = 0; i < pattern.size(); i++) {
-            var seg = segments.get(i);
-            var pat = pattern.get(i);
-
-            if (pat.color() != null && seg.color() != pat.color()) return false;
-            if (!seg.text().equals(pat.text())) return false;
+        MutableText line = Text.empty();
+        while (!linesStack.isEmpty()) {
+            line.append(linesStack.pop());
         }
-        return true;
+        if(!line.getString().isEmpty()) lines.add(line);
+
+        return lines;
     }
+
+    public static Text strip(Text text) {
+        Text[] siblings = text.getSiblings().toArray(new Text[0]);
+        boolean strippable = false;
+        if(siblings[0].getString().charAt(0) == ' '){
+            strippable = true;
+            siblings[0] = Text.literal(siblings[0].getString().substring(1)).setStyle(siblings[0].getStyle());
+        }
+        if(siblings[siblings.length-1].getString().charAt(siblings[siblings.length-1].getString().length()-1) == ' ' && siblings.length > 1){
+            strippable = true;
+            siblings[siblings.length-1] = Text.literal(siblings[siblings.length-1].getString().substring(0, siblings[siblings.length-1].getString().length()-1)).setStyle(siblings[siblings.length-1].getStyle());
+        }
+        if(strippable){
+            MutableText line = Text.empty();
+            for (int i = 0; i < siblings.length; i++) {
+                line.append(siblings[i]);
+            }
+            return line;
+        }
+        return text;
+    }
+
 
     // uses screen coordinates
     // TODO: refactor to output a Text object instead of String for more flexibility

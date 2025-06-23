@@ -98,7 +98,7 @@ public class Notif {
 
             // fancy text culling
             context.drawItem(new ItemStack(icon), 8, 8);
-            int maxWidth = 100;
+            int maxWidth = 120;
             String raw = description.getString();
             int len = raw.length();
             while (textRenderer.getWidth(Text.of(raw + "...")) > maxWidth && len > 0)
