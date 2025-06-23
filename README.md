@@ -1,7 +1,7 @@
 ﻿# Just Enough Updates
 Welcome to Just-Enough-Updates, a mod with smaller features which compliment existing 1.21 Hypixel Skyblock mods.
 
-# Mod Version: 1.21.5
+**Mod Version**: 1.21.5
 
 # Features
 - Copy Text: Left Crtl + Left Click on text you want to copy in the chat.
