@@ -12,7 +12,7 @@ import net.minecraft.text.TextColor;
 import java.util.*;
 
 
-public final class TextUtils {
+public class TextUtils {
     public static MinecraftClient client;
 
     private TextUtils() {

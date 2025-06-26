@@ -73,7 +73,12 @@ public class SettingsGUI extends Screen {
         for (FeatureCardWidget widget : widgets) {
             boolean visible = y + widget.height > 0 && y < this.height;
             if (widget.toggleButton != null) widget.toggleButton.visible = visible;
-            if (widget.inputField != null) widget.inputField.visible = visible;
+            if (widget.inputField != null) {
+                widget.inputField.visible = visible;
+                if(!isDifferent(widget)){
+                    widget.toggleButton.visible = false;
+                }
+            }
 
             if (visible) {
                 widget.updateWidgetPositions(padding, y);
@@ -83,6 +88,16 @@ public class SettingsGUI extends Screen {
         }
         super.render(context, mouseX, mouseY, deltaTicks);
         exitButton.render(context, mouseX, mouseY, deltaTicks);
+    }
+
+    public boolean isDifferent(FeatureCardWidget widget){
+        try{
+            return !widget.inputField.getText().equals(ModConfig.configs.get(widget.name.getString()).value);
+        }
+        catch (Exception e){
+            return true;
+        }
+
     }
 
     @Override

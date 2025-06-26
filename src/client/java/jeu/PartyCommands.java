@@ -26,7 +26,7 @@ public class PartyCommands {
         put(5, "INFERNAL");
     }};
 
-    public static void dinit(){
+    public static void off(){
         enabled = false;
     }
     public static void on(){
@@ -34,7 +34,6 @@ public class PartyCommands {
     }
 
     public static void init() {
-        enabled = true;
         isLeader = true;
 //        System.out.println("PartyCommands initialized, listening for party messages...");
 

@@ -15,9 +15,12 @@ public class ModConfig {
             new Config("boolean", "Chat Copy", "Ctrl + Click to copy chat", true),
             new Config("boolean", "Party Commands", "!ptme and instance joining commands (!f0/1/2/3/4/5/6/7, !m1/2/3/4/5/6/7, !t1/2/3/4/5)", true),
             new Config("boolean", "Dungeon Party Finder Stats", "Displays total secrets and runs across all profiles for incoming party finder members", true),
-//            new Config("boolean", "Pet HUD", "Displays information for currently active pet (requires pet tab widget /tab for more information)", true),
-//            new Config("text", "Pet HUD X", "X position for the Pet HUD", "10"),
-//            new Config("text", "Pet HUD Y", "Y position for the Pet HUD", "10")
+            new Config("boolean", "Pet HUD", "Displays information for currently active pet (requires pet tab widget /tab for more information)", true),
+            new Config("text", "Pet HUD X", "X position for the Pet HUD", "550"),
+            new Config("text", "Pet HUD Y", "Y position for the Pet HUD", "480"),
+            new Config("boolean", "Tree Progress", "Displays information for nearby trees", true),
+            new Config("text", "Tree Progress X", "X position for the Tree Progress HUD", "320"),
+            new Config("text", "Tree Progress Y", "Y position for the Tree Progress HUD", "280")
     };
 
     static {
@@ -50,17 +53,32 @@ public class ModConfig {
             Gson gson = new Gson();
             SerializableConfig[] loaded = gson.fromJson(reader, SerializableConfig[].class);
             if (loaded != null) {
-                configs.clear();
-                List<Config> featureList = new ArrayList<>();
+                // Start with defaults
+                resetToDefault();
+                // Map loaded configs by name
+                Map<String, SerializableConfig> loadedMap = new HashMap<>();
                 for (SerializableConfig sc : loaded) {
-                    Config c = sc.toConfig();
-                    configs.put(c.name.getString(), c);
-                    featureList.add(c);
+                    loadedMap.put(sc.name, sc);
                 }
-                features = featureList.toArray(new Config[0]);
+                // Merge loaded values into defaults
+                for (Config c : features) {
+                    SerializableConfig sc = loadedMap.get(c.name.getString());
+                    if (sc != null) {
+                        if (c.type.equals("boolean")) c.on = sc.on;
+                        if (c.type.equals("text")) c.value = sc.value;
+                        // Add more type handling as needed
+                    }
+                }
+                // Update configs map
+                configs.clear();
+                for (Config c : features) {
+                    configs.put(c.name.getString(), c);
+                }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            resetToDefault();
+            save();
         }
     }
 

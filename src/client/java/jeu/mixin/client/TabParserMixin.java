@@ -25,20 +25,14 @@ public class TabParserMixin {
             for (PlayerListS2CPacket.Entry entry : packet.getEntries()) {
                 if (entry.displayName() != null) {
                     Text displayName = entry.displayName();
-//                    System.out.println(displayName);
                     String text = displayName.getString().strip();
                     if(text.isEmpty()) continue;
-//                    System.out.println("TAB: " + text);
-
                     if(text.matches("\\[Lvl \\d{1,3}\\].*")){
-//                        System.out.println("Pet detected: " + text);
                         String[] petInfo = text.split("]");
                         TabList.fireEvent("Pet", displayName);
-//                        TabList.fireEvent("Pet LV", petInfo[0].replace("[Lvl ", "").strip());
                         continue;
                     }
                     if(text.equals("MAX LEVEL") || text.matches("[\\d,.]+[km]?/[\\d,.]+[km]?\\s*.*\\(.*\\)")){
-//                        System.out.println("Pet XP detected: " + text);
                         TabList.fireEvent("Pet XP", displayName); // give entire text, cant be bothered to parse it
                     }
                     String[] parts = text.split(":");

@@ -1,9 +1,15 @@
 package jeu;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import jeu.screens.SettingsGUI;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
+
+import java.awt.*;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
@@ -11,23 +17,37 @@ public class ModCommands {
 
     private ModCommands(){}
     private static int delayTicks = -1;
+    private static Runnable pendingAction = null;
 
     public static void init(){
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            dispatcher.register(literal("jeu").executes(context -> {
-                delayTicks = 3;
-                return 1;
-            }));
+            registerCommand(dispatcher, "jeu", () -> MinecraftClient.getInstance().setScreen(new SettingsGUI()), 3);
+            registerCommand(dispatcher, "mousePosition", () -> {
+                MinecraftClient client = MinecraftClient.getInstance();
+                double mouseX = client.mouse.getX();
+                double mouseY = client.mouse.getY();
+                String msg = String.format("Mouse position: (%.1f, %.1f)", mouseX, mouseY);
+                client.inGameHud.getChatHud().addMessage(Text.literal(msg));
+            }, 0);
         });
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (delayTicks > 0) {
                 delayTicks --;
             }
-            if (delayTicks == 0){
-                MinecraftClient.getInstance().setScreen(new SettingsGUI());
+            if (delayTicks == 0 && pendingAction != null){
+                pendingAction.run();
+                pendingAction = null;
                 delayTicks --;
             }
         });
+    }
 
+    private static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, String name, Runnable action, int delay) {
+        dispatcher.register(literal(name).executes(context -> {
+            delayTicks = delay;
+            pendingAction = action;
+            return Command.SINGLE_SUCCESS;
+        }));
     }
 }

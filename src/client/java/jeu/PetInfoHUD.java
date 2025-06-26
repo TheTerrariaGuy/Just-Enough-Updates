@@ -1,6 +1,7 @@
 package jeu;
 
 import jeu.screens.ModConfig;
+import jeu.terralib.GeneralHelper;
 import jeu.terralib.HudManager;
 import jeu.terralib.TabList;
 import jeu.terralib.TextUtils;
@@ -18,11 +19,7 @@ public class PetInfoHUD implements TabList.TabListener{
     private static HashMap<String, Text> petInfo = new HashMap<>();
     private String displayString;
 
-    public static void dinit() {
-//        TabList.removeListener("Pet", INSTANCE);
-////        TabList.removeListener("Pet LV", INSTANCE);
-//        TabList.removeListener("Pet XP", INSTANCE);
-//        HudManager.removeHudElement(petInfoElement);
+    public static void off() {
         enabled = false;
     }
     public static void on(){
@@ -30,7 +27,6 @@ public class PetInfoHUD implements TabList.TabListener{
     }
     public static void init() {
         TabList.addListener("Pet", INSTANCE);
-//        TabList.addListener("Pet LV", INSTANCE);
         TabList.addListener("Pet XP", INSTANCE);
         petInfo = new HashMap<>();
         petInfo.put("Pet", Text.literal("None (turn on pet info in tab list settings)"));
@@ -40,26 +36,18 @@ public class PetInfoHUD implements TabList.TabListener{
 
     private void updatePetInfoDisplay() {
 //        displayString = "[" + petInfo.get("Pet LV") + "] " + petInfo.get("Pet") + "\n" + petInfo.get("Pet XP");
-
         MutableText displayText = Text.empty().append(TextUtils.strip(petInfo.get("Pet"))).append(Text.literal("\n")).append(TextUtils.strip(petInfo.get("Pet XP")));
         System.out.println("Updating Pet Info HUD with: " + displayText.getString());
         // use \n as delimiter for new line
-        if(petInfoElement == null && !HudManager.hasElement("Pet Info")) {
+        if(petInfoElement != null) {
             // initialize the petInfoElement if it was null
-            petInfoElement = HudManager.addHudElement("Pet Info", displayText, safeParseInt(ModConfig.configs.get("Pet HUD X").value), safeParseInt(ModConfig.configs.get("Pet HUD Y").value), 3, 0xFFFFFF);
-        }else{
+            HudManager.removeHudElement(petInfoElement);
+        }
+//        System.out.println("Pet X:" + ModConfig.configs.get("Pet HUD X").value);
+//        System.out.println("Pet Y:" + ModConfig.configs.get("Pet HUD Y").value);
+        petInfoElement = HudManager.addHudElement("Pet Info", displayText, GeneralHelper.safeParseInt(ModConfig.configs.get("Pet HUD X").value), GeneralHelper.safeParseInt(ModConfig.configs.get("Pet HUD Y").value), 3, 0xFFFFFF);
+    }
 
-            petInfoElement.updateText(displayText);
-        }
-    }
-    public static int safeParseInt(String s) {
-        try {
-            return Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            System.out.println("bad number");
-            return 10;
-        }
-    }
     @Override
     public void onTabUpdate(String key, Text data) {
         if(petInfo.containsKey(key)) {

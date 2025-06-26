@@ -23,12 +23,12 @@ public class PartyFinderStatsMixin {
     @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
     public void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
         if (!MinecraftClient.getInstance().isOnThread()) {
-            System.out.println("not on thread");
+//            System.out.println("not on thread");
             return; // Only proceed on the render thread
         }
         if(!JustEnoughUpdatesClient.mixinEnabled.get("PartyFinderStatsMixin")) return;
         String message = packet.content().getString().replaceAll("§.", ""); // remove pesky color codes
-        System.out.println(message);
+//        System.out.println(message);
         if(message.startsWith("Party Finder >") && message.contains(" has joined the dungeon group!")) {
             String[] parts = message.split(" ");
             String username = parts[3].contains("[") ? parts[4] : parts[3]; // wowwowowow so fancy, hopefully nothing breaks since im observing packets

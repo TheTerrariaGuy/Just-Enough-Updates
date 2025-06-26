@@ -1,6 +1,7 @@
 package jeu.terralib;
 
 import jeu.PetInfoHUD;
+import jeu.TreeProgressHUD;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -21,26 +22,36 @@ public class HudManager {
 
 
     public static void init() {
-        HudRenderCallback.EVENT.register((DrawContext context, RenderTickCounter tickDelta) -> {
-            if(MinecraftClient.getInstance().player == null) return; // Prevent rendering if player is null
-            for(HudElement element : elements) {
-                if(element.name.equals("Pet Info") && !PetInfoHUD.enabled){
-                    continue;
-                }
-                element.render(context);
-            }
-        });
+        System.out.println("wow such great init");
+//        HudRenderCallback.EVENT.register((DrawContext context, RenderTickCounter tickDelta) -> {
+//            if(MinecraftClient.getInstance().player == null) return; // Prevent rendering if player is null
+//            for(HudElement element : elements) {
+//
+//                if(element.name.equals("Pet Info") && !PetInfoHUD.enabled){
+//                    continue;
+//                }
+//                if(element.name.equals("Tree Progress") && !TreeProgressHUD.enabled){
+//                    continue;
+//                }
+//                element.render(context);
+//            }
+//        });
+    }
+
+    public static List<HudElement> getElements() {
+        return elements;
     }
 
     public static HudElement addHudElement(String name, Text content, int x, int y, int padding, int color) {
 //        System.out.println("Adding HUD element: " + name + " at (" + x + ", " + y + ") with content: " + content);
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return null;
-        HudElement.TextHudElement text = new HudElement.TextHudElement(content, x, y, color);
+        int xOffset = HudElement.maxWidth(TextUtils.splitByLines(content))/2;
+        HudElement.TextHudElement text = new HudElement.TextHudElement(content, x - xOffset, y, color);
         HudElement.BoxHudElement box = new HudElement.BoxHudElement(text, padding, 0x55000000);
         HudElement element = new HudElement(name, box, text);
         elements.add(element);
-        System.out.println("HUD element added, elements size: " + elements.size());
+//        System.out.println("HUD element added, elements size: " + elements.size());
         return element;
     }
 
@@ -54,15 +65,16 @@ public class HudManager {
 
     public static void removeHudElement(HudElement element){
         if(element == null) return;
-        if(hasElement(element.name)){
-            elements.remove(element);
-            element = null;
+        for (int i = elements.size() - 1; i >= 0; i--) {
+            if(element.name.equals(elements.get(i).name)){
+                elements.remove(i);
+//                System.out.println("removing");
+            }
         }
-        return;
     }
 
     public static class HudElement {
-        final String name;
+        public final String name;
         private TextHudElement textElement;
         private BoxHudElement boxElement;
 
@@ -117,7 +129,7 @@ public class HudManager {
             TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
             int maxWidth = 0;
             for (Text line : text) {
-                int lineWidth = textRenderer.getWidth(line.getString());
+                int lineWidth = textRenderer.getWidth(line);
                 if (lineWidth > maxWidth) {
                     maxWidth = lineWidth;
                 }

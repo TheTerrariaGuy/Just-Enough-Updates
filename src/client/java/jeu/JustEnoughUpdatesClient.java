@@ -2,6 +2,7 @@ package jeu;
 
 import jeu.screens.ModConfig;
 import jeu.terralib.APIUtils;
+import jeu.terralib.HologramUtils;
 import jeu.terralib.HudManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
@@ -23,12 +24,14 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 		USERNAME = MinecraftClient.getInstance().getSession().getUsername();
 		System.out.println("Username: " + USERNAME);
 		initUUID();
-
+		loadFeatures();
 		HudManager.init();
 		ModCommands.init();
-//		PetInfoHUD.init();
+		HologramUtils.init();
+
+		PetInfoHUD.init();
 		PartyCommands.init();
-		loadFeatures();
+		TreeProgressHUD.init();
 	}
 	private void initUUID(){
 		APIUtils.getUUID(USERNAME).thenAccept(uuid -> {
@@ -41,9 +44,12 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 	}
 	public static void refreshFeatures(){
 		// disable all first
-		PartyCommands.dinit();
-//		PetInfoHUD.dinit();
+		PartyCommands.off();
+		PetInfoHUD.off();
+		TreeProgressHUD.off();
+
 		loadFeatures();
+
 	}
 	public static void loadFeatures(){
 		ModConfig.load();
@@ -55,7 +61,7 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 
 		//  enable
 		if(confs.get("Party Commands").on) PartyCommands.on();
-//		if(confs.get("Pet HUD").on) PetInfoHUD.on();
-
+		if(confs.get("Pet HUD").on) PetInfoHUD.on();
+		if(confs.get("Tree Progress").on) TreeProgressHUD.on();
 	}
 }

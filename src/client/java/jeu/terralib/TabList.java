@@ -30,7 +30,7 @@ public class TabList {
 
     public static void fireEvent(String channel, Text data) {
         List<TabListener> listeners = listenersByChannel.get(channel);
-        System.out.println("Firing event on channel: " + channel + " with data: " + data);
+//        System.out.println("Firing event on channel: " + channel + " with data: " + data);
         if (listeners != null) {
             for (TabListener listener : new ArrayList<>(listeners)) {
                 listener.onTabUpdate(channel, data);
