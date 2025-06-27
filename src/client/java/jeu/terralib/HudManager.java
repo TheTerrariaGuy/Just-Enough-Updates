@@ -66,6 +66,10 @@ public class HudManager {
     public static void removeHudElement(HudElement element){
         if(element == null) return;
         for (int i = elements.size() - 1; i >= 0; i--) {
+            if(elements.get(i) == null){
+                elements.remove(i);
+                continue;
+            }
             if(element.name.equals(elements.get(i).name)){
                 elements.remove(i);
 //                System.out.println("removing");
