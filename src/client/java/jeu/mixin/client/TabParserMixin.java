@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(value = ClientPlayNetworkHandler.class, priority = 69420) // sigma alpha top g priority, i wont cancel the packet trust :P
 public class TabParserMixin {
     private static String currentTab;
 
@@ -22,6 +22,7 @@ public class TabParserMixin {
     @Inject(method = "onPlayerList", at = @At("HEAD"))
     private void onPlayerList(PlayerListS2CPacket packet, CallbackInfo ci) {
         try{
+//            System.out.println("tab mixin triggered");
             for (PlayerListS2CPacket.Entry entry : packet.getEntries()) {
                 if (entry.displayName() != null) {
                     Text displayName = entry.displayName();
@@ -60,6 +61,7 @@ TAB CATEGORY NAMES:
 - SB Level
 - Bank
 - Interest
+
  */
 
 

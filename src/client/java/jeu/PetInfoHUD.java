@@ -24,6 +24,7 @@ public class PetInfoHUD implements TabList.TabListener{
     }
     public static void on(){
         enabled = true;
+        if(petInfoElement != null) INSTANCE.updatePetInfoDisplay();
     }
     public static void init() {
         TabList.addListener("Pet", INSTANCE);
@@ -34,7 +35,7 @@ public class PetInfoHUD implements TabList.TabListener{
         petInfo.put("Pet XP", Text.literal("0/0 (0%)"));
     }
 
-    private void updatePetInfoDisplay() {
+    public void updatePetInfoDisplay() {
 //        displayString = "[" + petInfo.get("Pet LV") + "] " + petInfo.get("Pet") + "\n" + petInfo.get("Pet XP");
         MutableText displayText = Text.empty().append(TextUtils.strip(petInfo.get("Pet"))).append(Text.literal("\n")).append(TextUtils.strip(petInfo.get("Pet XP")));
         System.out.println("Updating Pet Info HUD with: " + displayText.getString());

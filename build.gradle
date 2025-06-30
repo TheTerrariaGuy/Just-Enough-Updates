@@ -104,7 +104,7 @@ tasks.register('copyJarToMods', Copy) {
 	from remapJar.archiveFile
 	into "${System.getProperty("user.home")}/AppData/Roaming/.minecraft/mods"
 	rename { fileName ->
-		"mymod.jar"
+		"jeu-dev-ver.jar"
 	}
 }
 

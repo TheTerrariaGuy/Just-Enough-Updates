@@ -56,4 +56,9 @@ public class HologramUtils {
         cache = (ArrayList<ArmorStandEntity>) nearbyEntities;
         return (ArrayList<ArmorStandEntity>) nearbyEntities;
     }
+
+    public static ArrayList<ArmorStandEntity> getAllEntities(){
+        return cache;
+    }
+
 }
