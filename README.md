@@ -1,4 +1,4 @@
-[![Discord](https://img.shields.io/badge/Discord-Join%20our%20Server-7289DA?style=for-the-badge&logo=discord&logoColor=white)](discord.gg/avEjhnA6Zk)
+[![Discord](https://img.shields.io/badge/Discord-Join%20our%20Server-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/avEjhnA6Zk)
  # Just Enough Updates
 Welcome to Just-Enough-Updates, a mod with smaller features which compliment existing 1.21 Hypixel Skyblock mods.
 
