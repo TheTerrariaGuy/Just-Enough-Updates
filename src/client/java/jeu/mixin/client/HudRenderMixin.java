@@ -1,5 +1,6 @@
 package jeu.mixin.client;
 
+import jeu.PestCooldownHUD;
 import jeu.PetInfoHUD;
 import jeu.TreeProgressHUD;
 import jeu.terralib.HudManager;
@@ -29,6 +30,7 @@ public class HudRenderMixin {
             if(element == null) continue;
             if (element.name.equals("Pet Info") && !PetInfoHUD.enabled) continue;
             if (element.name.equals("Tree Progress") && !TreeProgressHUD.enabled) continue;
+            if (element.name.equals("Pest Info") && !PestCooldownHUD.enabled) continue;
             element.render(context);
         }
     }

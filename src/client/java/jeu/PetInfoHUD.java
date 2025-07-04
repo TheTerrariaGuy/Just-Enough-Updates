@@ -58,16 +58,4 @@ public class PetInfoHUD implements TabList.TabListener{
             System.out.println("PetInfoHUD received unknown key: " + key + " with data: " + data);
         }
     }
-
-    public class PetInfo implements Comparable{
-        private String name, petItem, petCandy, petSkin;
-        private int level;
-        private double xp;
-        boolean max;
-
-        @Override
-        public int compareTo(@NotNull Object o) {
-            return -1;
-        }
-    }
 }

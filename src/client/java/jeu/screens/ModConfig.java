@@ -20,7 +20,10 @@ public class ModConfig {
             new Config("text", "Pet HUD Y", "Y position for the Pet HUD", "480"),
             new Config("boolean", "Tree Progress", "Displays information for nearby trees", true),
             new Config("text", "Tree Progress X", "X position for the Tree Progress HUD", "320"),
-            new Config("text", "Tree Progress Y", "Y position for the Tree Progress HUD", "280")
+            new Config("text", "Tree Progress Y", "Y position for the Tree Progress HUD", "280"),
+            new Config("boolean", "Pest HUD", "Displays information for pest cooldown", true),
+            new Config("text", "Pest HUD X", "X position for the Pest HUD", "320"),
+            new Config("text", "Pest HUD Y", "Y position for the Pest HUD", "280")
     };
 
     static {

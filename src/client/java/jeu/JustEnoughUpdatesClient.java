@@ -28,8 +28,10 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 		HudManager.init();
 		ModCommands.init();
 		HologramUtils.init();
+		GlowingMushroomDetector.init(); GlowingMushroomDetector.on();
 
 		PetInfoHUD.init();
+		PestCooldownHUD.init();
 		PartyCommands.init();
 		TreeProgressHUD.init();
 	}
@@ -46,6 +48,7 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 		// disable all first
 		PartyCommands.off();
 		PetInfoHUD.off();
+		PestCooldownHUD.off();
 		TreeProgressHUD.off();
 
 		loadFeatures();
@@ -62,6 +65,8 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 		//  enable
 		if(confs.get("Party Commands").on) PartyCommands.on();
 		if(confs.get("Pet HUD").on) PetInfoHUD.on();
+		if(confs.get("Pest HUD").on) PestCooldownHUD.on();
 		if(confs.get("Tree Progress").on) TreeProgressHUD.on();
+
 	}
 }

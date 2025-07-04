@@ -1,16 +1,14 @@
 package jeu.terralib;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 
 public class WorldRenderUtils {
 
@@ -25,7 +23,6 @@ public class WorldRenderUtils {
      * @param alpha Alpha component (0.0-1.0)
      * @param lineWidth Width of the outline lines
      */
-
     public static void renderBlockOutline(MatrixStack matrices, Vec3d camera, BlockPos pos,
                                           float red, float green, float blue, float alpha, float lineWidth) {
         matrices.push();
@@ -33,41 +30,37 @@ public class WorldRenderUtils {
         // Translate to block position relative to camera
         matrices.translate(pos.getX() - camera.x, pos.getY() - camera.y, pos.getZ() - camera.z);
 
-        // Set up rendering state using direct OpenGL calls
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glLineWidth(lineWidth);
-        GL11.glColor4f(red, green, blue, alpha);
+        // Set up rendering state
+        RenderSystem.setShaderColor(red, green, blue, alpha);
+        RenderSystem.lineWidth(lineWidth);
 
-        // Use immediate mode rendering for simplicity
-        GL11.glBegin(GL11.GL_LINES);
+        // Get tessellator and buffer builder
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         // Bottom face
-        GL11.glVertex3f(0, 0, 0); GL11.glVertex3f(1, 0, 0);
-        GL11.glVertex3f(1, 0, 0); GL11.glVertex3f(1, 0, 1);
-        GL11.glVertex3f(1, 0, 1); GL11.glVertex3f(0, 0, 1);
-        GL11.glVertex3f(0, 0, 1); GL11.glVertex3f(0, 0, 0);
+        addLine(buffer, matrix, 0, 0, 0, 1, 0, 0, red, green, blue, alpha);
+        addLine(buffer, matrix, 1, 0, 0, 1, 0, 1, red, green, blue, alpha);
+        addLine(buffer, matrix, 1, 0, 1, 0, 0, 1, red, green, blue, alpha);
+        addLine(buffer, matrix, 0, 0, 1, 0, 0, 0, red, green, blue, alpha);
 
         // Top face
-        GL11.glVertex3f(0, 1, 0); GL11.glVertex3f(1, 1, 0);
-        GL11.glVertex3f(1, 1, 0); GL11.glVertex3f(1, 1, 1);
-        GL11.glVertex3f(1, 1, 1); GL11.glVertex3f(0, 1, 1);
-        GL11.glVertex3f(0, 1, 1); GL11.glVertex3f(0, 1, 0);
+        addLine(buffer, matrix, 0, 1, 0, 1, 1, 0, red, green, blue, alpha);
+        addLine(buffer, matrix, 1, 1, 0, 1, 1, 1, red, green, blue, alpha);
+        addLine(buffer, matrix, 1, 1, 1, 0, 1, 1, red, green, blue, alpha);
+        addLine(buffer, matrix, 0, 1, 1, 0, 1, 0, red, green, blue, alpha);
 
         // Vertical edges
-        GL11.glVertex3f(0, 0, 0); GL11.glVertex3f(0, 1, 0);
-        GL11.glVertex3f(1, 0, 0); GL11.glVertex3f(1, 1, 0);
-        GL11.glVertex3f(1, 0, 1); GL11.glVertex3f(1, 1, 1);
-        GL11.glVertex3f(0, 0, 1); GL11.glVertex3f(0, 1, 1);
+        addLine(buffer, matrix, 0, 0, 0, 0, 1, 0, red, green, blue, alpha);
+        addLine(buffer, matrix, 1, 0, 0, 1, 1, 0, red, green, blue, alpha);
+        addLine(buffer, matrix, 1, 0, 1, 1, 1, 1, red, green, blue, alpha);
+        addLine(buffer, matrix, 0, 0, 1, 0, 1, 1, red, green, blue, alpha);
 
-        GL11.glEnd();
+        BuiltBuffer built = buffer.end();
+        RenderLayer.getLines().draw(built);
 
-        // Restore rendering state
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glLineWidth(1.0f);
-
+        RenderSystem.lineWidth(1.0f);
         matrices.pop();
     }
 
@@ -88,58 +81,65 @@ public class WorldRenderUtils {
         // Translate to block position relative to camera
         matrices.translate(pos.getX() - camera.x, pos.getY() - camera.y, pos.getZ() - camera.z);
 
-        // Set up rendering state using direct OpenGL calls
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glColor4f(red, green, blue, alpha);
-
-        // Use immediate mode rendering for simplicity
-        GL11.glBegin(GL11.GL_QUADS);
+        // Set up rendering state
+        RenderSystem.setShaderColor(red, green, blue, alpha);
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        Tessellator tessellator = Tessellator.getInstance();
 
         // Bottom face (y = 0)
-        GL11.glVertex3f(0, 0, 0);
-        GL11.glVertex3f(1, 0, 0);
-        GL11.glVertex3f(1, 0, 1);
-        GL11.glVertex3f(0, 0, 1);
+        BufferBuilder bottomBuffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        bottomBuffer.vertex(matrix, 0, 0, 0).color(red, green, blue, alpha);
+        bottomBuffer.vertex(matrix, 1, 0, 0).color(red, green, blue, alpha);
+        bottomBuffer.vertex(matrix, 1, 0, 1).color(red, green, blue, alpha);
+        bottomBuffer.vertex(matrix, 0, 0, 1).color(red, green, blue, alpha);
+
+        BuiltBuffer bottomBuilt = bottomBuffer.end();
+        RenderLayer.getTranslucent().draw(bottomBuilt);
 
         // Top face (y = 1)
-        GL11.glVertex3f(0, 1, 1);
-        GL11.glVertex3f(1, 1, 1);
-        GL11.glVertex3f(1, 1, 0);
-        GL11.glVertex3f(0, 1, 0);
+        BufferBuilder topBuffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        topBuffer.vertex(matrix, 0, 1, 1).color(red, green, blue, alpha);
+        topBuffer.vertex(matrix, 1, 1, 1).color(red, green, blue, alpha);
+        topBuffer.vertex(matrix, 1, 1, 0).color(red, green, blue, alpha);
+        topBuffer.vertex(matrix, 0, 1, 0).color(red, green, blue, alpha);
+        BuiltBuffer topBuilt = topBuffer.end();
+        RenderLayer.getTranslucent().draw(topBuilt);
 
         // North face (z = 0)
-        GL11.glVertex3f(0, 0, 0);
-        GL11.glVertex3f(0, 1, 0);
-        GL11.glVertex3f(1, 1, 0);
-        GL11.glVertex3f(1, 0, 0);
+        BufferBuilder northBuffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        northBuffer.vertex(matrix, 0, 0, 0).color(red, green, blue, alpha);
+        northBuffer.vertex(matrix, 0, 1, 0).color(red, green, blue, alpha);
+        northBuffer.vertex(matrix, 1, 1, 0).color(red, green, blue, alpha);
+        northBuffer.vertex(matrix, 1, 0, 0).color(red, green, blue, alpha);
+        BuiltBuffer northBuilt = northBuffer.end();
+        RenderLayer.getTranslucent().draw(northBuilt);
 
         // South face (z = 1)
-        GL11.glVertex3f(1, 0, 1);
-        GL11.glVertex3f(1, 1, 1);
-        GL11.glVertex3f(0, 1, 1);
-        GL11.glVertex3f(0, 0, 1);
+        BufferBuilder southBuffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        southBuffer.vertex(matrix, 1, 0, 1).color(red, green, blue, alpha);
+        southBuffer.vertex(matrix, 1, 1, 1).color(red, green, blue, alpha);
+        southBuffer.vertex(matrix, 0, 1, 1).color(red, green, blue, alpha);
+        southBuffer.vertex(matrix, 0, 0, 1).color(red, green, blue, alpha);
+        BuiltBuffer southBuilt = southBuffer.end();
+        RenderLayer.getTranslucent().draw(southBuilt);
 
         // West face (x = 0)
-        GL11.glVertex3f(0, 0, 1);
-        GL11.glVertex3f(0, 1, 1);
-        GL11.glVertex3f(0, 1, 0);
-        GL11.glVertex3f(0, 0, 0);
+        BufferBuilder westBuffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        westBuffer.vertex(matrix, 0, 0, 1).color(red, green, blue, alpha);
+        westBuffer.vertex(matrix, 0, 1, 1).color(red, green, blue, alpha);
+        westBuffer.vertex(matrix, 0, 1, 0).color(red, green, blue, alpha);
+        westBuffer.vertex(matrix, 0, 0, 0).color(red, green, blue, alpha);
+        BuiltBuffer westBuilt = westBuffer.end();
+        RenderLayer.getTranslucent().draw(westBuilt);
 
         // East face (x = 1)
-        GL11.glVertex3f(1, 0, 0);
-        GL11.glVertex3f(1, 1, 0);
-        GL11.glVertex3f(1, 1, 1);
-        GL11.glVertex3f(1, 0, 1);
-
-        GL11.glEnd();
-
-        // Restore rendering state
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
+        BufferBuilder eastBuffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        eastBuffer.vertex(matrix, 1, 0, 0).color(red, green, blue, alpha);
+        eastBuffer.vertex(matrix, 1, 1, 0).color(red, green, blue, alpha);
+        eastBuffer.vertex(matrix, 1, 1, 1).color(red, green, blue, alpha);
+        eastBuffer.vertex(matrix, 1, 0, 1).color(red, green, blue, alpha);
+        BuiltBuffer eastBuilt = eastBuffer.end();
+        RenderLayer.getTranslucent().draw(eastBuilt);
 
         matrices.pop();
     }
@@ -149,8 +149,8 @@ public class WorldRenderUtils {
      */
     public static void renderBlockHighlight(MatrixStack matrices, Vec3d camera, BlockPos pos,
                                             float red, float green, float blue, float alpha) {
-        renderBlockFill(matrices, camera, pos, red, green, blue, alpha * 0.3f);
-        renderBlockOutline(matrices, camera, pos, red, green, blue, alpha, 2.0f);
+        renderBlockFill(matrices, camera, pos, red, green, blue, alpha);
+//        renderBlockOutline(matrices, camera, pos, red, green, blue, alpha, 2.0f);
     }
 
     /**
@@ -161,19 +161,6 @@ public class WorldRenderUtils {
                                 float red, float green, float blue, float alpha) {
         buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha);
         buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha);
-    }
-
-    /**
-     * Helper method to add a quad to the buffer
-     */
-    private static void addQuad(BufferBuilder buffer, Matrix4f matrix,
-                                float x1, float y1, float z1, float x2, float y2, float z2,
-                                float x3, float y3, float z3, float x4, float y4, float z4,
-                                float red, float green, float blue, float alpha) {
-        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha);
-        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha);
-        buffer.vertex(matrix, x3, y3, z3).color(red, green, blue, alpha);
-        buffer.vertex(matrix, x4, y4, z4).color(red, green, blue, alpha);
     }
 
     /**
