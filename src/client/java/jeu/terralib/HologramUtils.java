@@ -2,24 +2,21 @@ package jeu.terralib;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.util.math.Box;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 public class HologramUtils {
 //    public static List<ArmorStandEntity> hologramStands;
     private static int lastUpdate;
-    private static ArrayList<ArmorStandEntity> cache;
+    private static ArrayList<ArmorStandEntity> cacheNearby, cacheAll;
 
     static {
-//        hologramStands = new ArrayList<>();
         lastUpdate = 0;
     }
 
@@ -30,8 +27,8 @@ public class HologramUtils {
     }
 
     public static ArrayList<ArmorStandEntity> getNearbyHolograms(double radius, double upper, double lower){
-        if(cache != null && lastUpdate < 20){
-            return cache;
+        if(cacheNearby != null && lastUpdate < 20){
+            return cacheNearby;
         }
         lastUpdate = 0;
         MinecraftClient client = MinecraftClient.getInstance();
@@ -53,12 +50,28 @@ public class HologramUtils {
                 area,
                 entity -> true // optional filter, or more specific like e -> e instanceof LivingEntity
         );
-        cache = (ArrayList<ArmorStandEntity>) nearbyEntities;
+        cacheNearby = (ArrayList<ArmorStandEntity>) nearbyEntities;
         return (ArrayList<ArmorStandEntity>) nearbyEntities;
     }
 
-    public static ArrayList<ArmorStandEntity> getAllEntities(){
-        return cache;
+    public static ArrayList<ArmorStandEntity> getAllHolograms(){
+        if(cacheAll != null && lastUpdate < 20){
+            return cacheAll;
+        }
+        lastUpdate = 0;
+        MinecraftClient client = MinecraftClient.getInstance();
+        if(client.player == null) return new ArrayList<ArmorStandEntity>();
+        int renderDistance = client.options.getViewDistance().getValue() * 16; // 16 blocks per chunk
+        BlockPos playerPos = client.player.getBlockPos();
+        // Use Box.of(center, sizeX, sizeY, sizeZ)
+        Box area = Box.of(playerPos.toCenterPos(), renderDistance * 2, renderDistance * 2, renderDistance * 2);
+        List<ArmorStandEntity> allStands = client.world.getEntitiesByType(
+                EntityType.ARMOR_STAND, // or null for all types
+                area,
+                entity -> true // optional filter, or more specific like e -> e instanceof LivingEntity
+        );
+        cacheAll = (ArrayList<ArmorStandEntity>) allStands;
+        return (ArrayList<ArmorStandEntity>) allStands;
     }
 
 }

@@ -2,30 +2,58 @@ package jeu.screens;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import jeu.features.*;
+import jeu.oopShits.Feature;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 
 import java.io.*;
 import java.util.*;
-
+// TODO: refactor to chandle new feature system
 public class ModConfig {
     public static Map<String, Config> configs;
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "jeu_config.json");
+
+
+    public static HashMap<String, Class<? extends Feature>> featureClasses = new HashMap<>(){{
+        put("Chat Copy", ChatCopy.class); // something something
+        put("Party Commands", PartyCommands.class);
+        put("Dungeon Party Finder Stats", PartyFinderStats.class);
+        put("Pet HUD", PetInfoHUD.class);
+        put("Tree Progress", TreeProgressHUD.class);
+        put("Pest HUD", PestCooldownHUD.class);
+    }};
+
+    // these are default values
     public static Config[] features = new Config[]{
-            new Config("boolean", "Chat Copy", "Ctrl + Click to copy chat", true),
-            new Config("boolean", "Party Commands", "!ptme and instance joining commands (!f0/1/2/3/4/5/6/7, !m1/2/3/4/5/6/7, !t1/2/3/4/5)", true),
-            new Config("boolean", "Dungeon Party Finder Stats", "Displays total secrets and runs across all profiles for incoming party finder members", true),
-            new Config("boolean", "Pet HUD", "Displays information for currently active pet (requires pet tab widget /tab for more information)", true),
-            new Config("text", "Pet HUD X", "X position for the Pet HUD", "550"),
-            new Config("text", "Pet HUD Y", "Y position for the Pet HUD", "480"),
-            new Config("boolean", "Tree Progress", "Displays information for nearby trees", true),
-            new Config("text", "Tree Progress X", "X position for the Tree Progress HUD", "320"),
-            new Config("text", "Tree Progress Y", "Y position for the Tree Progress HUD", "280"),
-            new Config("boolean", "Pest HUD", "Displays information for pest cooldown", true),
-            new Config("text", "Pest HUD X", "X position for the Pest HUD", "320"),
-            new Config("text", "Pest HUD Y", "Y position for the Pest HUD", "280")
+            // toggles
+            new Config("toggle", "Chat Copy", "Ctrl + Click to copy chat", true),
+            new Config("toggle", "Party Commands", "!ptme and instance joining commands (!f0/1/2/3/4/5/6/7, !m1/2/3/4/5/6/7, !t1/2/3/4/5)", true),
+            new Config("toggle", "Dungeon Party Finder Stats", "Displays total secrets and runs across all profiles for incoming party finder members", true),
+
+            // hud toggles
+            new Config("hudToggle", "Pet HUD", "Displays information for currently active pet (requires pet tab widget /tab for more information)", true),
+                new Config("Pet HUD X", 550),
+                new Config("Pet HUD Y", 480),
+            new Config("hudToggle", "Tree Progress", "Displays information for nearby trees", true),
+                new Config("Tree Progress X", 320),
+                new Config("Tree Progress Y", 280),
+            new Config("hudToggle", "Pest HUD", "Displays information for pest cooldown", true),
+                new Config("Pest HUD X", 320),
+                new Config("Pest HUD Y", 280)
     };
 
+
+    /*
+        Style reminder:
+        - For coodinate numbers, use [feature name] + " X/Y"
+
+        Config types:
+        - toggle: normal toggleable feature
+        - hudToggle: toggle + 2 numbers associated with it
+        - number: not actual config, can also be used to store random shits
+
+     */
     static {
         resetToDefault();
     }
@@ -67,9 +95,9 @@ public class ModConfig {
                 for (Config c : features) {
                     SerializableConfig sc = loadedMap.get(c.name.getString());
                     if (sc != null) {
-                        if (c.type.equals("boolean")) c.on = sc.on;
-                        if (c.type.equals("text")) c.value = sc.value;
-                        // Add more type handling as needed
+                        if (c.type.equals("toggle")) c.on = sc.on;
+                        if (c.type.equals("hudToggle")) c.on = sc.on;
+                        if (c.type.equals("number")) c.intValue = sc.intValue;
                     }
                 }
                 // Update configs map
@@ -91,6 +119,7 @@ public class ModConfig {
         public boolean on;
         public String value;
         public String[] values;
+        public int intValue;
 
         public Config(String type, String name, String description) {
             this.type = type;
@@ -109,6 +138,14 @@ public class ModConfig {
             this.description = Text.literal(description);
             this.value = value;
         }
+
+        // this config will only store a number, idk if this is most efficient
+        // TODO refactor into hashmap across all?
+        public Config(String name, int value){
+            this.type = "number";
+            this.name = Text.literal(name);
+            this.intValue = value;
+        }
         public Config() {}
     }
 
@@ -119,7 +156,7 @@ public class ModConfig {
         public boolean on;
         public String value;
         public String[] values;
-
+        public int intValue;
         public SerializableConfig() {}
 
         public SerializableConfig(Config c) {
@@ -130,6 +167,7 @@ public class ModConfig {
             this.on = c.on;
             this.value = c.value;
             this.values = c.values;
+            this.intValue = c.intValue;
         }
 
         public Config toConfig() {
@@ -141,6 +179,7 @@ public class ModConfig {
             c.on = this.on;
             c.value = this.value;
             c.values = this.values;
+            c.intValue = this.intValue;
             return c;
         }
     }

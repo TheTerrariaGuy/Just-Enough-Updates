@@ -1,13 +1,15 @@
-package jeu;
+package jeu.features;
 
+import jeu.JustEnoughUpdatesClient;
+import jeu.oopShits.Feature;
 import jeu.terralib.CommandUtils;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 
 import java.util.HashMap;
 
-public class PartyCommands {
+public class PartyCommands extends Feature {
+    public static PartyCommands INSTANCE = new PartyCommands(); public static PartyCommands getInstance(){return INSTANCE;}
     public static boolean isLeader;
-    private static boolean enabled;
     private static final HashMap<Integer, String> FLOORIDS = new HashMap<>() {{
         put(0, "ENTRANCE");
         put(1, "FLOOR_ONE");
@@ -26,19 +28,11 @@ public class PartyCommands {
         put(5, "INFERNAL");
     }};
 
-    public static void off(){
-        enabled = false;
-    }
-    public static void on(){
-        enabled = true;
-    }
-
-    public static void init() {
+    public void init() {
         isLeader = true;
 //        System.out.println("PartyCommands initialized, listening for party messages...");
-
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if(!enabled) return;
+            if(!INSTANCE.enabled) return;
             String msg = message.getString();
 //            System.out.println("Received chat message: " + msg);
             PartyMessage processed = parsePartyMessage(msg);
@@ -150,16 +144,24 @@ public class PartyCommands {
 
 
             }
-            if(msg.matches("^The party was transferred to (.{1,50})\\..*")){
-                // im such a good coder
+            if(msg.matches("^The party was transferred to.+")){
                 System.out.println("Party transfer message detected, setting isLeader");
-                String username = message.getString().replace("The party was transferred to ", "").replace(".", "").replace(" ", "");
-                username = cleanUsername(username); // paranoia
-                isLeader = username.equals(JustEnoughUpdatesClient.USERNAME);
+                String username = null;
+                if(msg.contains(" by ")){
+                    username = message.getString().replace("The party was transferred to ", "").split("by")[0].strip();
+                }else if(msg.contains(" because ")){
+                    username = message.getString().replace("The party was transferred to ", "").split("because")[0].strip();
+                }
+                if(username == null){
+                    System.out.println("error: bad party message: " + msg);
+                }else{
+                    username = cleanUsername(username);
+                    isLeader = username.equals(JustEnoughUpdatesClient.USERNAME);
+                }
             }
-            if(msg.matches("^(.{1,50}) has promoted (.{1,50}) to Party Leader\\.$")){
+            if(msg.matches("^(.{1,50}) has promoted (.{1,50}) to Party Leader.*")){
                 System.out.println("Party transfer message detected, setting isLeader");
-                String username = msg.split("has promoted")[1].replace("to Party Leader", "").replace(" ", ""); // the person who got promoted
+                String username = msg.split("has promoted")[1].split("to Party Leader")[0].strip(); // the person who got promoted
                 username = cleanUsername(username);
                 isLeader = username.equals(JustEnoughUpdatesClient.USERNAME);
             }
@@ -167,8 +169,16 @@ public class PartyCommands {
                 System.out.println("Joined party message detected, setting isLeader to false");
                 isLeader = false;
             }
-            if(msg.matches("^You have left the party!$")){
+            if(msg.matches("^You have left the party.$")){
                 System.out.println("Left party message detected, setting isLeader to true");
+                isLeader = true;
+            }
+            if(msg.matches("^The party was disbanded because all invites expired and the party was empty.$")){
+                System.out.println("Disband message detected, setting isLeader to true");
+                isLeader = true;
+            }
+            if(msg.matches("^([^:]{1,50}) has disbanded the party!")){
+                System.out.println("Disband message detected, setting isLeader to true");
                 isLeader = true;
             }
             if(msg.matches("^You are not this party's leader!$")){
@@ -179,7 +189,7 @@ public class PartyCommands {
         });
     }
 
-    private static String cleanUsername(String username) {
+    private String cleanUsername(String username) {
         // Remove any leading or trailing whitespace and special characters
         String[] parts = username.split(" ");
         if(parts.length > 1) {
@@ -189,10 +199,8 @@ public class PartyCommands {
         return username.trim().replaceAll("[^A-Za-z0-9_]", "");
     }
 
-    private static PartyMessage parsePartyMessage(String msg) {
+    private PartyMessage parsePartyMessage(String msg) {
         // Only process if message starts with the party color code prefix
-
-
         // Remove all color and formatting codes
         msg = msg.replaceAll("§.", "");
         if (!msg.startsWith("Party >")) return null;

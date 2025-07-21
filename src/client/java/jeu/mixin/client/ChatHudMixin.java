@@ -1,6 +1,6 @@
 package jeu.mixin.client;
 
-import jeu.JustEnoughUpdatesClient;
+import jeu.features.ChatCopy;
 import jeu.terralib.Notif;
 import jeu.terralib.TextUtils;
 import net.minecraft.client.MinecraftClient;
@@ -18,7 +18,7 @@ public class ChatHudMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
 //        System.out.println(JustEnoughUpdatesClient.mixinEnabled.get("ChatHudMixin"));
-        if(!JustEnoughUpdatesClient.mixinEnabled.get("ChatHudMixin")) return;
+        if(!ChatCopy.INSTANCE.enabled) return;
         if (!(MinecraftClient.getInstance().currentScreen instanceof ChatScreen)) return;
 
 //        System.out.println("mouseClicked: " + mouseX + ", " + mouseY + ", button: " + button);
@@ -35,4 +35,6 @@ public class ChatHudMixin {
             }
         }
     }
+
+
 }

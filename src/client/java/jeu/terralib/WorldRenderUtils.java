@@ -2,7 +2,10 @@ package jeu.terralib;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import jeu.mixin.client.WorldRendererAccessor;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
@@ -10,7 +13,70 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 
+import java.util.OptionalDouble;
+
 public class WorldRenderUtils {
+
+    private static final Style style = new Style(1f, 0f, 0f, 0.5f, 4f);
+
+    public static record Style(float red, float green, float blue, float alpha, float width){}
+
+//    public static void renderFull(WorldRenderContext context, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float red, float green, float blue, float alpha, float lineWidth, boolean culling){
+////        renderFilled(context, minX, minY, minZ);
+//    }
+//
+//    public static void renderFilled(WorldRenderContext context, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float red, float green, float blue, float alpha, float lineWidth, boolean culling){
+//
+//    }
+    // so much QOL wowow
+    public static void renderOutline(WorldRenderContext context, BlockPos block, boolean culling) {
+        renderOutline(context, block, style.red(), style.green(), style.blue(), style.alpha(), style.width(), culling);
+    }
+
+    public static void renderOutline(WorldRenderContext context, BlockPos block, float red, float green, float blue, float alpha, float lineWidth, boolean culling) {
+        double minX = block.getX();
+        double minY = block.getY();
+        double minZ = block.getZ();
+        double maxX = minX + 1;
+        double maxY = minY + 1;
+        double maxZ = minZ + 1;
+        renderOutline(context, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha, lineWidth, culling);
+    }
+
+    public static void renderOutline(WorldRenderContext context, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, boolean culling) {
+        renderOutline(context, minX, minY, minZ, maxX, maxY, maxZ, style.red(), style.green(), style.blue(), style.alpha(), style.width(), culling);
+    }
+
+    public static void renderOutline(WorldRenderContext context, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, Style style, boolean culling) {
+        renderOutline(context, minX, minY, minZ, maxX, maxY, maxZ, style.red(), style.green(), style.blue(), style.alpha(), style.width(), culling);
+    }
+
+    public static void renderOutline(WorldRenderContext context, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float red, float green, float blue, float alpha, float lineWidth, boolean culling) {
+        if (!((WorldRendererAccessor) MinecraftClient.getInstance().worldRenderer).getFrustum().isVisible(new Box(minX, minY, minZ, maxX, maxY, maxZ))) return;
+        MatrixStack matrices = context.matrixStack();
+        Vec3d camera = context.camera().getPos();
+        matrices.push();
+        matrices.translate(-camera.getX(), -camera.getY(), -camera.getZ());
+        VertexConsumerProvider.Immediate consumers = (VertexConsumerProvider.Immediate) context.consumers();
+        RenderLayer layer = RenderLayer.of(
+                culling ? "cull_lines" : "lines",
+                RenderLayer.DEFAULT_BUFFER_SIZE,
+                false,
+                false,
+                RenderPipelines.LINES,
+                RenderLayer.MultiPhaseParameters.builder()
+                        .lineWidth(new RenderPhase.LineWidth(OptionalDouble.of(lineWidth)))
+                        .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
+                        .build(false)
+        );
+        VertexConsumer buffer = consumers.getBuffer(layer);
+        VertexRendering.drawBox(matrices, buffer, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha);
+
+        consumers.draw(layer);
+        matrices.pop();
+    }
+
+
 
     /**
      * Renders a colored outline around a block
@@ -184,5 +250,6 @@ public class WorldRenderUtils {
                 renderBlockOutline(matrices, camera, pos, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f);
             }
         }
+
     }
 }

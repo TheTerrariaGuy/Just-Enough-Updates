@@ -21,14 +21,7 @@ public class ModCommands {
 
     public static void init(){
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            registerCommand(dispatcher, "jeu", () -> MinecraftClient.getInstance().setScreen(new SettingsGUI()), 3);
-            registerCommand(dispatcher, "mousePosition", () -> {
-                MinecraftClient client = MinecraftClient.getInstance();
-                double mouseX = client.mouse.getX();
-                double mouseY = client.mouse.getY();
-                String msg = String.format("Mouse position: (%.1f, %.1f)", mouseX, mouseY);
-                client.inGameHud.getChatHud().addMessage(Text.literal(msg));
-            }, 0);
+            registerCommand(dispatcher, "jeu", () -> MinecraftClient.getInstance().setScreen(new SettingsGUI(0)), 3);
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

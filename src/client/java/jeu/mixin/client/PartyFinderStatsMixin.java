@@ -3,6 +3,7 @@ package jeu.mixin.client;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jeu.JustEnoughUpdatesClient;
+import jeu.features.PartyFinderStats;
 import jeu.terralib.APIUtils;
 import jeu.terralib.CommandUtils;
 import net.minecraft.client.MinecraftClient;
@@ -26,7 +27,7 @@ public class PartyFinderStatsMixin {
 //            System.out.println("not on thread");
             return; // Only proceed on the render thread
         }
-        if(!JustEnoughUpdatesClient.mixinEnabled.get("PartyFinderStatsMixin")) return;
+        if(!PartyFinderStats.INSTANCE.enabled) return;
         String message = packet.content().getString().replaceAll("§.", ""); // remove pesky color codes
 //        System.out.println(message);
         if(message.startsWith("Party Finder >") && message.contains(" has joined the dungeon group!")) {

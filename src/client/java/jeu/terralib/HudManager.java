@@ -1,28 +1,24 @@
 package jeu.terralib;
 
-import jeu.PetInfoHUD;
-import jeu.TreeProgressHUD;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
+import java.util.Map;
 
 public class HudManager {
-    private static List<HudElement> elements = new ArrayList<>();
+    private static final Map<String, HudElement> elements = new HashMap<>();
     private HudManager() {}
 
 
     public static void init() {
         System.out.println("wow such great init");
+        // maybe use later
+
 //        HudRenderCallback.EVENT.register((DrawContext context, RenderTickCounter tickDelta) -> {
 //            if(MinecraftClient.getInstance().player == null) return; // Prevent rendering if player is null
 //            for(HudElement element : elements) {
@@ -39,7 +35,19 @@ public class HudManager {
     }
 
     public static List<HudElement> getElements() {
-        return elements;
+        return new ArrayList<>(elements.values());
+    }
+
+    public static HudElement getElement(String name){
+        return elements.get(name);
+    }
+
+    public static void moveElement(String name, int x, int y){
+//        System.out.println(name);
+
+        HudElement e = elements.get(name);
+        e.updateTextPosition(x, y);
+        e.updateBox(x, y, e.boxElement.width, e.boxElement.height, e.boxElement.color);
     }
 
     public static HudElement addHudElement(String name, Text content, int x, int y, int padding, int color) {
@@ -49,44 +57,54 @@ public class HudManager {
         int xOffset = HudElement.maxWidth(TextUtils.splitByLines(content))/2;
         HudElement.TextHudElement text = new HudElement.TextHudElement(content, x - xOffset, y, color);
         HudElement.BoxHudElement box = new HudElement.BoxHudElement(text, padding, 0x55000000);
-        HudElement element = new HudElement(name, box, text);
-        elements.add(element);
+        HudElement element = new HudElement(name, box, text, padding);
+        elements.put(name, element);
 //        System.out.println("HUD element added, elements size: " + elements.size());
         return element;
     }
 
+    public static HudElement makeHudElement(String name, Text content, int x, int y, int padding, int color){
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.player == null) return null;
+        int xOffset = HudElement.maxWidth(TextUtils.splitByLines(content))/2;
+        HudElement.TextHudElement text = new HudElement.TextHudElement(content, x - xOffset, y, color);
+        HudElement.BoxHudElement box = new HudElement.BoxHudElement(text, padding, 0x55000000);
+        HudElement element = new HudElement(name, box, text, padding);
+        return element;
+    }
+
     public static void addHudElement(HudElement element) {
-        elements.add(element);
+        if (element != null) {
+            elements.put(element.name, element);
+        }
     }
 
     public static boolean hasElement(String name){
-        return elements.stream().anyMatch(e -> e.name.equals(name));
+        return elements.containsKey(name);
     }
 
     public static void removeHudElement(HudElement element){
         if(element == null) return;
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            if(elements.get(i) == null){
-                elements.remove(i);
-                continue;
-            }
-            if(element.name.equals(elements.get(i).name)){
-                elements.remove(i);
-//                System.out.println("removing");
-            }
-        }
+        elements.remove(element.name);
     }
-
+    // TODO: refactor to use visible boolean
     public static class HudElement {
         public final String name;
         private TextHudElement textElement;
         private BoxHudElement boxElement;
+        private boolean visible;
+        private int padding;
+
+        public boolean visible() {return visible;}
+
+        public void setVisible(boolean b) {visible = b;}
 
 
-        public HudElement(String name, BoxHudElement box, TextHudElement text) {
+        public HudElement(String name, BoxHudElement box, TextHudElement text, int padding) {
             this.name = name;
             this.boxElement = box;
             this.textElement = text;
+            this.padding = padding;
         }
 
         public void updateText(Text newText) {
@@ -96,6 +114,10 @@ public class HudManager {
 
         public void updateBox(int x, int y, int width, int height, int color) {
             this.boxElement = new BoxHudElement(x, y, width, height, color);
+        }
+
+        public void updateTextPosition(int x, int y){
+            this.textElement = new TextHudElement(this.textElement.text(), x + padding, y + padding, this.textElement.color());
         }
 
         public void render(DrawContext context) {

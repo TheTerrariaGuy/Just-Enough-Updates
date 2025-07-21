@@ -21,8 +21,9 @@ public class SettingsGUI extends Screen {
     private ButtonWidget exitButton;
 
 
-    public SettingsGUI() {
+    public SettingsGUI(int scroll) {
         super(Text.literal("Settings"));
+        scrollY = scroll;
     }
     @Override
     public void removed() {
@@ -37,6 +38,7 @@ public class SettingsGUI extends Screen {
         int totalHeight = 20;
         if (features != null) {
             for (int i = 0; i < features.length; i++) {
+                if(features[i].type.equals("number")) continue; // nunber = single number setting, dont need a card for it
                 FeatureCardWidget widget = new FeatureCardWidget(features[i], padding);
                 widgets.add(widget);
                 totalHeight += widget.height;
@@ -45,6 +47,9 @@ public class SettingsGUI extends Screen {
                 }
                 if (widget.inputField != null) {
                     this.addDrawableChild(widget.inputField);
+                }
+                if (widget.positionButton != null) {
+                    this.addDrawableChild(widget.positionButton);
                 }
             }
         }
@@ -73,12 +78,14 @@ public class SettingsGUI extends Screen {
         for (FeatureCardWidget widget : widgets) {
             boolean visible = y + widget.height > 0 && y < this.height;
             if (widget.toggleButton != null) widget.toggleButton.visible = visible;
-            if (widget.inputField != null) {
-                widget.inputField.visible = visible;
-                if(!isDifferent(widget)){
-                    widget.toggleButton.visible = false;
-                }
-            }
+            if (widget.positionButton != null) widget.positionButton.visible = visible;
+
+//            if (widget.inputField != null) { // no need for now
+//                widget.inputField.visible = visible;
+//                if(!isDifferent(widget)){
+//                    widget.toggleButton.visible = false;
+//                }
+//            }
 
             if (visible) {
                 widget.updateWidgetPositions(padding, y);
@@ -123,6 +130,7 @@ public class SettingsGUI extends Screen {
         private final Text name;
         private final java.util.List<OrderedText> wrappedLines;
         private final ButtonWidget toggleButton;
+        private final ButtonWidget positionButton;
         private final TextFieldWidget inputField;
 
         public FeatureCardWidget(ModConfig.Config config, int padding) {
@@ -137,10 +145,10 @@ public class SettingsGUI extends Screen {
             );
 
             height = wrappedLines.size() * SettingsGUI.this.textRenderer.fontHeight + 2 * padding + 20;
-            if (height < 50 + 2 * padding && "text".equals(type)) height = 60 + 2 * padding;
-            if (height < 20 + 2 * padding && "boolean".equals(type)) height = 20 + 2 * padding;
+//            if (height < 50 + 2 * padding && "hudToggle".equals(type)) height = 60 + 2 * padding; // no need for this right now
+            if (height < 20 + 2 * padding) height = 20 + 2 * padding;
 
-            if ("boolean".equals(type)) {
+            if ("toggle".equals(type)) {
                 this.toggleButton = ButtonWidget.builder(
                         Text.literal(config.on ? "ON" : "OFF"),
                         btn -> {
@@ -150,36 +158,59 @@ public class SettingsGUI extends Screen {
                         }
                 ).position(0, 0).size(25, 25).build();
                 this.inputField = null;
-            } else if ("text".equals(type)) {
-                this.inputField = new TextFieldWidget(
-                        SettingsGUI.this.textRenderer,
-                        0, 0, width/2, 20,
-                        Text.literal("Enter value")
-                );
-                this.inputField.setText(config.value != null ? config.value : "");
+                this.positionButton = null;
+            } else if ("hudToggle".equals(type)) {
+//                this.inputField = new TextFieldWidget(
+//                        SettingsGUI.this.textRenderer,
+//                        0, 0, width/2, 20,
+//                        Text.literal("Enter value")
+//                );
+//                this.inputField.setText(config.value != null ? config.value : "");
+//                this.toggleButton = ButtonWidget.builder(
+//                        Text.literal("Update"),
+//                        btn -> {
+//                            config.value = inputField.getText();
+//                            ModConfig.save();
+//                        }
+//                ).position(0, 0).size(60, 20).build();
                 this.toggleButton = ButtonWidget.builder(
-                        Text.literal("Update"),
+                        Text.literal(config.on ? "ON" : "OFF"),
                         btn -> {
-                            config.value = inputField.getText();
+                            config.on = !config.on;
+                            btn.setMessage(Text.literal(config.on ? "ON" : "OFF"));
                             ModConfig.save();
                         }
-                ).position(0, 0).size(60, 20).build();
+                ).position(0, 0).size(25, 25).build();
+
+                this.positionButton = ButtonWidget.builder(
+                        Text.literal("✏️"),
+                        btn -> {
+                            if (client != null) client.setScreen(new PositionScreen(this.name.getString(), scrollY));
+                        }
+                ).position(0, 0).size(25, 25).build();
+
+                this.inputField = null;
             } else {
                 this.toggleButton = null;
                 this.inputField = null;
+                this.positionButton = null;
             }
         }
 
         public void updateWidgetPositions(int x, int y) {
-            if ("boolean".equals(type) && toggleButton != null) {
+            if ("toggle".equals(type) && toggleButton != null) {
                 toggleButton.setX(x + padding + width - 50);
                 toggleButton.setY(y + padding);
             }
-            if ("text".equals(type) && inputField != null && toggleButton != null) {
-                inputField.setX(x + (width * 3) / 8 + 20);
-                inputField.setY(y + padding);
-                toggleButton.setX(x + padding + width - 85);
-                toggleButton.setY(y + padding + 25);
+            if ("hudToggle".equals(type) && positionButton != null && toggleButton != null) {
+//                inputField.setX(x + (width * 3) / 8 + 20);
+//                inputField.setY(y + padding);
+//                toggleButton.setX(x + padding + width - 85);
+//                toggleButton.setY(y + padding + 25);
+                toggleButton.setX(x + padding + width - 50);
+                toggleButton.setY(y + padding);
+                positionButton.setX(x + padding + width - 80);
+                positionButton.setY(y + padding);
             }
         }
 

@@ -3,12 +3,13 @@
 	"package": "jeu.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin",
 		"ChatHudMixin",
 		"ChatHudAccessor",
 		"PartyFinderStatsMixin",
 		"TabParserMixin",
-		"HudRenderMixin"
+		"HudRenderMixin",
+		"WorldRendererAccessor",
+		"LivingEntityAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

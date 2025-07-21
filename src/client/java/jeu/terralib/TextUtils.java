@@ -49,16 +49,18 @@ public class TextUtils {
     public static Text strip(Text text) {
         Text[] siblings = text.getSiblings().toArray(new Text[0]);
         boolean strippable = false;
-        if(siblings[0].getString().charAt(0) == ' '){
-            strippable = true;
-            siblings[0] = Text.literal(siblings[0].getString().substring(1)).setStyle(siblings[0].getStyle());
-        }
-        if(siblings[siblings.length-1].getString().charAt(siblings[siblings.length-1].getString().length()-1) == ' ' && siblings.length > 1){
-            strippable = true;
-            siblings[siblings.length-1] = Text.literal(siblings[siblings.length-1].getString().substring(0, siblings[siblings.length-1].getString().length()-1)).setStyle(siblings[siblings.length-1].getStyle());
+        if(siblings.length > 0){
+            if(siblings[0].getString().charAt(0) == ' '){
+                strippable = true;
+                siblings[0] = Text.literal(siblings[0].getString().substring(1)).setStyle(siblings[0].getStyle());
+            }
+            if(siblings[siblings.length-1].getString().charAt(siblings[siblings.length-1].getString().length()-1) == ' ' && siblings.length > 1){
+                strippable = true;
+                siblings[siblings.length-1] = Text.literal(siblings[siblings.length-1].getString().substring(0, siblings[siblings.length-1].getString().length()-1)).setStyle(siblings[siblings.length-1].getStyle());
+            }
         }
         if(strippable){
-            MutableText line = Text.empty();
+            MutableText line = text.getString().isEmpty() ? (MutableText) text : Text.empty();
             for (int i = 0; i < siblings.length; i++) {
                 line.append(siblings[i]);
             }

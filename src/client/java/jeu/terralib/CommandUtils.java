@@ -40,9 +40,12 @@ public class CommandUtils {
     }
 
     public static void sendTextBypassQueue(Text text) {
-        if (MinecraftClient.getInstance().inGameHud != null) {
-            ChatHud chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
-            chatHud.addMessage(text);
+//        if (MinecraftClient.getInstance().inGameHud != null) {
+//            ChatHud chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
+//            chatHud.addMessage(text);
+//        }
+        if (MinecraftClient.getInstance().player != null) {
+            MinecraftClient.getInstance().player.networkHandler.sendChatMessage(text.getString());
         }
     }
 

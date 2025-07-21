@@ -1,9 +1,10 @@
-package jeu;
+package jeu.features;
 
+import jeu.oopShits.FeatureHud;
 import jeu.screens.ModConfig;
-import jeu.terralib.GeneralHelper;
 import jeu.terralib.HologramUtils;
 import jeu.terralib.HudManager;
+import jeu.terralib.TabList;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -15,29 +16,39 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class TreeProgressHUD {
+public class TreeProgressHUD extends FeatureHud {
+    private TreeProgressHUD() {}
     private static int tickCount;
-    public static boolean enabled;
-    public static HudManager.HudElement currentHud;
+    public static TreeProgressHUD INSTANCE = new TreeProgressHUD(); public static TreeProgressHUD getInstance(){return INSTANCE;}
 
-    public static void init(){
+    public HudManager.HudElement getDefaultElement() {
+        defaultElement = HudManager.makeHudElement(
+                "Tree Progress",
+                Text.literal("Tree Progress: 99%"),
+                ModConfig.configs.get("Tree Progress X").intValue,
+                ModConfig.configs.get("Tree Progress Y").intValue,
+                3,
+                0xFFFFFF
+        );
+        return defaultElement;
+    }
+
+    @Override
+    public void init(){
         tickCount = 0;
+        
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             tickCount ++;
             if(tickCount > 4){ // 0.25 second
                 tickCount = 0;
-                refreshHud();
+                INSTANCE.updateElement();
             }
         });
     }
-    public static void on(){
-        enabled = true;
-    }
-    public static void off(){
-        enabled = false;
-    }
-    public static void refreshHud(){
+
+    public void updateElement(){
         if (MinecraftClient.getInstance().player == null) return;
+        if (!activeZones.contains(TabList.GeneralInfo.getArea())) return;
         ArrayList<ArmorStandEntity> headers = (ArrayList<ArmorStandEntity>) HologramUtils.getNearbyHolograms(15, 15, 50);
         Queue<HeaderWithDistance> sorted = new PriorityQueue<>();
         for(ArmorStandEntity header : headers){
@@ -58,12 +69,21 @@ public class TreeProgressHUD {
                 renderText.append(d.header.getCustomName()).append(Text.literal("\n"));
             }
         }
-        if(currentHud != null){
-            HudManager.removeHudElement(currentHud);
+        if(currentElement != null){
+            HudManager.removeHudElement(currentElement);
         }
-        if(!renderText.getString().isEmpty()) currentHud = HudManager.addHudElement("Tree Progress", renderText, GeneralHelper.safeParseInt(ModConfig.configs.get("Tree Progress X").value), GeneralHelper.safeParseInt(ModConfig.configs.get("Tree Progress Y").value), 3, 0xFFFFFF);
+        if(!renderText.getString().isEmpty()) currentElement = HudManager.addHudElement(
+                "Tree Progress",
+                renderText,
+                ModConfig.configs.get("Tree Progress X").intValue,
+                ModConfig.configs.get("Tree Progress Y").intValue,
+                3,
+                0xFFFFFF
+        );
     }
-    public static class HeaderWithDistance implements Comparable<HeaderWithDistance>{
+
+    // TODO: rename later probably
+    public class HeaderWithDistance implements Comparable<HeaderWithDistance>{
         public ArmorStandEntity header;
         public float distance;
         public HeaderWithDistance(ArmorStandEntity header) {
@@ -77,7 +97,7 @@ public class TreeProgressHUD {
 
         @Override
         public int compareTo(@NotNull TreeProgressHUD.HeaderWithDistance o) {
-            if(this.distance > o.distance){
+            if(this.distance > o.distance){ // manully do because floor/round goofy
                 return 1;
             } else if (this.distance == o.distance) {
                 return 0;
