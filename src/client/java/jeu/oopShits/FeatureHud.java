@@ -7,16 +7,15 @@ import net.minecraft.text.Text;
 
 import java.util.HashSet;
 
-public abstract class FeatureHud extends Feature implements TabList.TabListener {
+public abstract class FeatureHud extends Feature  {
 
     public HudManager.HudElement currentElement, defaultElement;
-
-    public HashSet<String> activeZones;
 
     public ModConfig.Config xConf,yConf;
 
     @Override
     public void onTabUpdate(String channel, Text info){
+        super.onTabUpdate(channel, info);
         if(activeZones.contains(info.getString().split(":")[1].strip())){
             currentElement.setVisible(true);
         }else{
@@ -26,13 +25,13 @@ public abstract class FeatureHud extends Feature implements TabList.TabListener 
 
     public void on(){
         super.on();
-        currentElement.setVisible(true);
+        if(currentElement != null) currentElement.setVisible(true);
         updateElement();
     }
 
     public void off(){
         super.off();
-        currentElement.setVisible(false);
+        if(currentElement != null) currentElement.setVisible(false);
     }
 
     public abstract HudManager.HudElement getDefaultElement();

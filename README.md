@@ -2,9 +2,10 @@
  # Just Enough Updates
 Welcome to Just-Enough-Updates, a mod with smaller features which compliment existing 1.21 Hypixel Skyblock mods.
 
-
-
 **Mod Version:** 1.21.5
+
+*For prerelease versions, download from the latestBuild file.*
+
 
 # Features
 - Copy Text: Left Crtl + Left Click on text you want to copy in the chat.
@@ -20,8 +21,13 @@ Welcome to Just-Enough-Updates, a mod with smaller features which compliment exi
 
 # Upcoming Features
 
-- HUD editor (dragging)
 - Glowing Mushroom Finder: highlights glowing mushrooms
+- Pickaxe Cooldown Display
+- Mining Assistance: etherwarp waypoints + target block highlight
+- Vanguard Shaft Alert: alerts player for vanguard shafts
+- Remaining Lapis Corpses Display
+- Settings Filtering
+- 
 
 # Update Log
 - 6/12/2025: initial release
@@ -37,3 +43,5 @@ Welcome to Just-Enough-Updates, a mod with smaller features which compliment exi
 - 6/26/2025
   - added Pet HUD
   - added Tree Progress Display
+- 7/21/2025
+  - added dragging HUD adjustment

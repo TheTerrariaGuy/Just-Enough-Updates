@@ -17,14 +17,15 @@ public class PestCooldownHUD extends FeatureHud {
     public static PestCooldownHUD INSTANCE = new PestCooldownHUD(); public static PestCooldownHUD getInstance(){return INSTANCE;}
 
     public HudManager.HudElement getDefaultElement() {
-        defaultElement = HudManager.addHudElement(
+        defaultElement = HudManager.makeHudElement(
                 "Pest HUD",
-                Text.literal("Pest Cooldown: 00s"), // TODO: double check format
+                Text.empty().append(Text.literal("Pest Cooldown: 999s")), // TODO: double check format
                 ModConfig.configs.get("Pest HUD X").intValue,
                 ModConfig.configs.get("Pest HUD Y").intValue,
                 3,
                 0xFFFFFF
         );
+        System.out.println("Pest Cooldown: created gui");
         return defaultElement;
     }
 
@@ -32,7 +33,7 @@ public class PestCooldownHUD extends FeatureHud {
         INSTANCE.activeZones = new HashSet<>(){{
             add("Garden");
         }};
-        TabList.addListener("Area", INSTANCE);
+//        TabList.addListener("Area", INSTANCE);
         TabList.addListener("Cooldown", INSTANCE);
         pestInfo = new HashMap<>();
         pestInfo.put("Cooldown", Text.literal("None"));
@@ -40,7 +41,7 @@ public class PestCooldownHUD extends FeatureHud {
     }
 
     public void updateElement() {
-        if(!TabList.GeneralInfo.getArea().equals("Garden")){
+        if(notVeryOn()){
             if(HudManager.hasElement("Pest HUD")) HudManager.removeHudElement(INSTANCE.currentElement);
             return;
         }

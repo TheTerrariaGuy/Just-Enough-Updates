@@ -1,14 +1,22 @@
 package jeu.terralib;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.text.Text;
 
-import java.awt.geom.Area;
 import java.util.*;
 
 public class TabList {
     public interface TabListener {
         void onTabUpdate(String key, Text data);
     }
+
+    public static void init(){
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            lobbyChange();
+        });
+    }
+
+
     public static class GeneralInfo implements TabListener { // for common info, eg area
 //        public HashSet<String> COMBAT = new HashSet<>(){{
 //
@@ -17,8 +25,7 @@ public class TabList {
             add("Private Island");
             add("Garden");
             add("Hub");
-            add("The Barn");
-            add("Mushroom Desert");
+            add("The Farming Islands");
             add("The Park");
             add("Spider's Den");
             add("The End");
@@ -52,10 +59,12 @@ public class TabList {
         }
     }
 
-
+    public static void lobbyChange(){
+        fireEvent("Area", Text.empty().append(Text.literal("none"))); // sets to none
+        GeneralInfo.area = "none"; // sets to none
+    }
 
     // notif system
-
     private static final Map<String, List<TabListener>> listenersByChannel = new HashMap<>();
 
     public static void addListener(String channel, TabListener listener) {

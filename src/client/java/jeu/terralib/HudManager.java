@@ -14,9 +14,9 @@ public class HudManager {
     private static final Map<String, HudElement> elements = new HashMap<>();
     private HudManager() {}
 
-
+    // TODO: use iterators to loop render
     public static void init() {
-        System.out.println("wow such great init");
+//        System.out.println("wow such great init");
         // maybe use later
 
 //        HudRenderCallback.EVENT.register((DrawContext context, RenderTickCounter tickDelta) -> {
@@ -46,8 +46,8 @@ public class HudManager {
 //        System.out.println(name);
 
         HudElement e = elements.get(name);
-        e.updateTextPosition(x, y);
-        e.updateBox(x, y, e.boxElement.width, e.boxElement.height, e.boxElement.color);
+        e.updateTextPosition(x - e.boxElement.width/2 + e.padding, y);
+        e.updateBox(x - e.boxElement.width/2 + e.padding, y, e.boxElement.width, e.boxElement.height, e.boxElement.color);
     }
 
     public static HudElement addHudElement(String name, Text content, int x, int y, int padding, int color) {
@@ -113,11 +113,11 @@ public class HudManager {
         }
 
         public void updateBox(int x, int y, int width, int height, int color) {
-            this.boxElement = new BoxHudElement(x, y, width, height, color);
+            this.boxElement = new BoxHudElement(x - padding, y - padding, width, height, color);
         }
 
         public void updateTextPosition(int x, int y){
-            this.textElement = new TextHudElement(this.textElement.text(), x + padding, y + padding, this.textElement.color());
+            this.textElement = new TextHudElement(this.textElement.text(), x, y, this.textElement.color());
         }
 
         public void render(DrawContext context) {

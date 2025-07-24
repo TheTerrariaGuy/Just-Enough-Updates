@@ -22,6 +22,8 @@ public class ModConfig {
         put("Pet HUD", PetInfoHUD.class);
         put("Tree Progress", TreeProgressHUD.class);
         put("Pest HUD", PestCooldownHUD.class);
+        put("Glowing Mushroom Highlight", GlowingMushroomDetector.class);
+//        put("Suppress Warnings in Logs", SuppressWarningsInLogs.class);
     }};
 
     // these are default values
@@ -30,6 +32,7 @@ public class ModConfig {
             new Config("toggle", "Chat Copy", "Ctrl + Click to copy chat", true),
             new Config("toggle", "Party Commands", "!ptme and instance joining commands (!f0/1/2/3/4/5/6/7, !m1/2/3/4/5/6/7, !t1/2/3/4/5)", true),
             new Config("toggle", "Dungeon Party Finder Stats", "Displays total secrets and runs across all profiles for incoming party finder members", true),
+            new Config("toggle", "Glowing Mushroom Highlight", "Highlights glowing mushrooms in the glowing mushroom cave.", true),
 
             // hud toggles
             new Config("hudToggle", "Pet HUD", "Displays information for currently active pet (requires pet tab widget /tab for more information)", true),
@@ -40,7 +43,10 @@ public class ModConfig {
                 new Config("Tree Progress Y", 280),
             new Config("hudToggle", "Pest HUD", "Displays information for pest cooldown", true),
                 new Config("Pest HUD X", 320),
-                new Config("Pest HUD Y", 280)
+                new Config("Pest HUD Y", 280),
+
+            // dev stuff
+//            new Config("toggle", "Suppress Warnings in Logs", "Disables the spammy warns in logs", false)
     };
 
 

@@ -9,7 +9,9 @@
 		"TabParserMixin",
 		"HudRenderMixin",
 		"WorldRendererAccessor",
-		"LivingEntityAccessor"
+		"LivingEntityAccessor",
+		"ParticleManagerMixin",
+		"WorldMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

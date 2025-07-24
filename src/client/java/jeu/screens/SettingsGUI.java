@@ -183,7 +183,7 @@ public class SettingsGUI extends Screen {
                 ).position(0, 0).size(25, 25).build();
 
                 this.positionButton = ButtonWidget.builder(
-                        Text.literal("✏️"),
+                        Text.literal("✎"),
                         btn -> {
                             if (client != null) client.setScreen(new PositionScreen(this.name.getString(), scrollY));
                         }

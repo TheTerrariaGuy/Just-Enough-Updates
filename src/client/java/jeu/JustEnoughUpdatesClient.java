@@ -1,6 +1,6 @@
 package jeu;
 
-import jeu.features.*;
+import jeu.oopShits.Feature;
 import jeu.screens.ModConfig;
 import jeu.terralib.APIUtils;
 import jeu.terralib.HologramUtils;
@@ -8,9 +8,10 @@ import jeu.terralib.HudManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class JustEnoughUpdatesClient implements ClientModInitializer {
 	public static String USERNAME, UUID;
@@ -38,18 +39,21 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 		System.out.println("Username: " + USERNAME);
 		initUUID();
 		loadFeatures();
+		Configurator.setLevel("Minecraft", Level.WARN);
+		System.out.println("[JEU] Disabled goofy yggdrasil (and others :p) warnings, ur welcome");
 
 		HudManager.init();
 		ModCommands.init();
 		HologramUtils.init();
 
-		if(ModConfig.configs.isEmpty() || ModConfig.configs.keySet().size() < ModConfig.features.length) ModConfig.resetToDefault();
-		HashMap<String, ModConfig.Config> confs = (HashMap<String, ModConfig.Config>) ModConfig.configs;
+//		if(ModConfig.configs.isEmpty() || ModConfig.configs.keySet().size() < ModConfig.features.length) ModConfig.resetToDefault();
 
-		for (String key : confs.keySet()) {
-			if("number".equals(confs.get(key).type)) continue;
+		HashMap<String, Class<? extends Feature>> feats = ModConfig.featureClasses;
+		for (String key : feats.keySet()) {
 			try {
-				ModConfig.featureClasses.get(key).getMethod("init").invoke(null); // wattasigm
+				Class<? extends Feature> c = feats.get(key);
+				Feature instance = (Feature) c.getMethod("getInstance").invoke(null);
+				instance.init();
 			}
 			catch (Exception e){
 				System.out.println("error: " + e.getMessage());
@@ -63,26 +67,39 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 //		PartyCommands.init();
 //		TreeProgressHUD.init();
 
+//		WorldRenderEvents.START.register(context -> {
+//			if (GL.getCapabilities().GL_KHR_debug) {
+//				glDisable(GL_DEBUG_OUTPUT);
+//				glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+//				System.out.println("[JEU] OpenGL debug output disabled, you are welcome.");
+//			}
+//		});
 
 	}
 	private void initUUID(){
 		APIUtils.getUUID(USERNAME).thenAccept(uuid -> {
 			UUID = uuid;
 			System.out.println("UUID: " + UUID);
+			deving();
 		}).exceptionally(e -> {
 			System.err.println("Failed to get UUID: " + e.getMessage());
 			return null;
 		});
 	}
+
+	private void deving(){
+		if(UUID.equals("731139daa37b409f92e2e339268918ed")) // 731139daa37b409f92e2e339268918ed
+			DevShits.init();
+	}
+
 	public static void refreshFeatures(){
 		// disable all first
-		if(ModConfig.configs.isEmpty() || ModConfig.configs.keySet().size() < ModConfig.features.length) ModConfig.resetToDefault();
-		HashMap<String, ModConfig.Config> confs = (HashMap<String, ModConfig.Config>) ModConfig.configs;
-
-		for (String key : confs.keySet()) {
-			if("number".equals(confs.get(key).type)) continue;
+		HashMap<String, Class<? extends Feature>> feats = ModConfig.featureClasses;
+		for (String key : feats.keySet()) {
 			try {
-				ModConfig.featureClasses.get(key).getMethod("off").invoke(null); // wattasigm
+				Class<? extends Feature> c = feats.get(key);
+				Feature instance = (Feature) c.getMethod("getInstance").invoke(null);
+				instance.off();
 			}
 			catch (Exception e){
 				System.out.println("error: " + e.getMessage());
@@ -100,29 +117,23 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 	public static void loadFeatures(){
 		ModConfig.load();
 		if(ModConfig.configs.isEmpty() || ModConfig.configs.keySet().size() < ModConfig.features.length) ModConfig.resetToDefault();
-		HashMap<String, ModConfig.Config> confs = (HashMap<String, ModConfig.Config>) ModConfig.configs;
+//		HashMap<String, ModConfig.Config> confs = (HashMap<String, ModConfig.Config>) ModConfig.configs;
 //		mixinEnabled = new HashMap<>();
 //		mixinEnabled.put("ChatHudMixin", confs.get("Chat Copy").on);
 //		mixinEnabled.put("PartyFinderStatsMixin", confs.get("Dungeon Party Finder Stats").on);
 
 		//  enable
-
-		/*
-			configs must parallel to featureClasses
-		 */
-		for (String key : confs.keySet()) {
-			if("number".equals(confs.get(key).type)) continue;
+		HashMap<String, Class<? extends Feature>> feats = ModConfig.featureClasses;
+		for (String key : feats.keySet()) {
 			try {
-				if(confs.get(key).on) ModConfig.featureClasses.get(key).getMethod("on").invoke(null); // wattasigm
+				Class<? extends Feature> c = feats.get(key);
+				Feature instance = (Feature) c.getMethod("getInstance").invoke(null);
+				instance.on();
 			}
 			catch (Exception e){
 				System.out.println("error: " + e.getMessage());
 			}
 		}
-//		if(confs.get("Party Commands").on) PartyCommands.on();
-//		if(confs.get("Pet HUD").on) PetInfoHUD.on();
-//		if(confs.get("Pest HUD").on) PestCooldownHUD.on();
-//		if(confs.get("Tree Progress").on) TreeProgressHUD.on();
 
 	}
 }

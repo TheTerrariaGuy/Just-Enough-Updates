@@ -32,7 +32,8 @@ public class PartyCommands extends Feature {
         isLeader = true;
 //        System.out.println("PartyCommands initialized, listening for party messages...");
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {
-            if(!INSTANCE.enabled) return;
+//            if(!INSTANCE.enabled) return;
+            if(notVeryOn()) return;
             String msg = message.getString();
 //            System.out.println("Received chat message: " + msg);
             PartyMessage processed = parsePartyMessage(msg);
@@ -49,7 +50,7 @@ public class PartyCommands extends Feature {
                  */
 
                 // transfer to other player
-                if(processed.message.equals("!ptme") && isLeader && !processed.playerName.equals(JustEnoughUpdatesClient.USERNAME)){
+                if((processed.message.equals("!ptme") || processed.message.equals("!pt")) && isLeader && !processed.playerName.equals(JustEnoughUpdatesClient.USERNAME)){
                     CommandUtils.send("/party transfer " + processed.playerName);
                     isLeader = false;
                 }

@@ -24,7 +24,7 @@ public class TreeProgressHUD extends FeatureHud {
     public HudManager.HudElement getDefaultElement() {
         defaultElement = HudManager.makeHudElement(
                 "Tree Progress",
-                Text.literal("Tree Progress: 99%"),
+                Text.empty().append(Text.literal("Tree Progress: 99%")),
                 ModConfig.configs.get("Tree Progress X").intValue,
                 ModConfig.configs.get("Tree Progress Y").intValue,
                 3,
@@ -48,7 +48,10 @@ public class TreeProgressHUD extends FeatureHud {
 
     public void updateElement(){
         if (MinecraftClient.getInstance().player == null) return;
-        if (!activeZones.contains(TabList.GeneralInfo.getArea())) return;
+        if (notVeryOn()) {
+            if(currentElement != null) HudManager.removeHudElement(currentElement);
+            return;
+        }
         ArrayList<ArmorStandEntity> headers = (ArrayList<ArmorStandEntity>) HologramUtils.getNearbyHolograms(15, 15, 50);
         Queue<HeaderWithDistance> sorted = new PriorityQueue<>();
         for(ArmorStandEntity header : headers){

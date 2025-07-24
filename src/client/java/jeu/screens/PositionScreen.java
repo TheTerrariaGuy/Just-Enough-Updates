@@ -15,6 +15,7 @@ public class PositionScreen extends Screen {
     public ButtonWidget exitButton, resetButton, fullResetButton;
     public int currX, currY, initX, initY, lastMouseX, lastMouseY;
     public boolean mouseDown = false;
+    private boolean added = false;
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -36,16 +37,21 @@ public class PositionScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         if(!HudManager.hasElement(selected)){
             try {
-                Class<? extends Feature> c = ModConfig.featureClasses.get(selected);
-                System.out.println(c.getName());
-                FeatureHud instance = (FeatureHud) c.getMethod("getInstance").invoke(null);
-                System.out.println(instance);
-                HudManager.HudElement ele = instance.getDefaultElement();
+                if(!HudManager.hasElement(selected)){
+                    Class<? extends Feature> c = ModConfig.featureClasses.get(selected);
+                    System.out.println(c.getName());
+                    FeatureHud instance = (FeatureHud) c.getMethod("getInstance").invoke(null);
+                    System.out.println(instance);
+                    HudManager.HudElement ele = instance.getDefaultElement();
+                    System.out.println(ele);
 //                HudManager.HudElement ele = (HudManager.HudElement) c.getMethod("getDefaultElement").invoke(instance);
-                System.out.println("Created hud element: " + ele.name);
+//                System.out.println("Created hud element: " + ele.name);
+                    HudManager.addHudElement(ele);
+                    added = true;
+                }
             }
             catch (Exception e){
-//                e.printStackTrace();
+                e.printStackTrace();
                 // if the error doesnt affect runtime, i dont need to fix it :smiling_imp:
             }
         }
@@ -87,8 +93,8 @@ public class PositionScreen extends Screen {
         fullResetButton = ButtonWidget.builder(
                 Text.literal("🔄"),
                 btn -> {
-                    currX = initX;
-                    currY = initY;
+                    currX = this.width/2;
+                    currY = this.height/2;
                     HudManager.moveElement(selected, currX, currY);
                 }
         ).position(30, 5).size(20, 20).build();
@@ -122,10 +128,12 @@ public class PositionScreen extends Screen {
 
     @Override
     public void close() {
-        // Custom logic when Escape is pressed or the screen is closed
         ModConfig.configs.get(selected + " X").intValue = currX;
         ModConfig.configs.get(selected + " Y").intValue = currY;
         ModConfig.save();
+        if(added){
+            HudManager.removeHudElement(HudManager.getElement(selected)); // cooked
+        }
         if (this.client != null) {
             this.client.setScreen(new SettingsGUI(scroll));
         }

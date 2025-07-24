@@ -37,7 +37,7 @@ public class PetInfoHUD extends FeatureHud {
     @Override
     public HudManager.HudElement getDefaultElement(){
         MutableText displayText = Text.empty().append(TextUtils.strip(petInfo.get("Pet"))).append(Text.literal("\n")).append(TextUtils.strip(petInfo.get("Pet XP")));
-        defaultElement = HudManager.addHudElement(
+        defaultElement = HudManager.makeHudElement(
                 "Pet HUD",
                 displayText,
                 ModConfig.configs.get("Pet HUD X").intValue,
@@ -74,6 +74,12 @@ public class PetInfoHUD extends FeatureHud {
     @Override
     public void onTabUpdate(String key, Text data) {
         super.onTabUpdate(key, data);
+        if(notVeryOn()) { // wow nested if, such bad programmer
+            if(currentElement != null && currentElement.visible()){
+                currentElement.setVisible(false);
+                return;
+            }
+        }
         if(petInfo.containsKey(key)) {
             petInfo.put(key, data);
             updateElement();

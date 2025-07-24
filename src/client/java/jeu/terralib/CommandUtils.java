@@ -49,6 +49,13 @@ public class CommandUtils {
         }
     }
 
+    public static void sendDirectToChat(String message) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client != null && client.player != null) {
+            client.inGameHud.getChatHud().addMessage(Text.literal(message));
+        }
+    }
+
     public static class QueuedCommand {
         Text command;
         int count;
