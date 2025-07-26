@@ -27,7 +27,7 @@ public class PartyFinderStatsMixin {
 //            System.out.println("not on thread");
             return; // Only proceed on the render thread
         }
-        if(!PartyFinderStats.INSTANCE.enabled) return;
+        if(PartyFinderStats.INSTANCE.notVeryOn()) return;
         String message = packet.content().getString().replaceAll("§.", ""); // remove pesky color codes
 //        System.out.println(message);
         if(message.startsWith("Party Finder >") && message.contains(" has joined the dungeon group!")) {

@@ -18,7 +18,7 @@ public class ChatHudMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
 //        System.out.println(JustEnoughUpdatesClient.mixinEnabled.get("ChatHudMixin"));
-        if(!ChatCopy.INSTANCE.enabled) return;
+        if(!ChatCopy.INSTANCE.enabled) return; // no checking location for this feature
         if (!(MinecraftClient.getInstance().currentScreen instanceof ChatScreen)) return;
 
 //        System.out.println("mouseClicked: " + mouseX + ", " + mouseY + ", button: " + button);

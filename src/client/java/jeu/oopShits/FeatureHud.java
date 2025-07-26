@@ -15,12 +15,14 @@ public abstract class FeatureHud extends Feature  {
 
     @Override
     public void onTabUpdate(String channel, Text info){
-        super.onTabUpdate(channel, info);
-        if(activeZones.contains(info.getString().split(":")[1].strip())){
-            currentElement.setVisible(true);
-        }else{
-            currentElement.setVisible(false);
+        if("Area".equals(channel) && currentElement != null) {
+            if (activeZones.contains(info.getString().split(":")[1].strip())) {
+                currentElement.setVisible(true);
+            } else {
+                currentElement.setVisible(false);
+            }
         }
+        super.onTabUpdate(channel, info);
     }
 
     public void on(){
@@ -36,6 +38,6 @@ public abstract class FeatureHud extends Feature  {
 
     public abstract HudManager.HudElement getDefaultElement();
 
+    // TODO: refactor to do area checks here, require super instead
     public abstract void updateElement();
-
 }

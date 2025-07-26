@@ -13,11 +13,9 @@ import java.util.HashMap;
 public class PetInfoHUD extends FeatureHud {
     private PetInfoHUD(){};
     private HashMap<String, Text> petInfo = new HashMap<>();
-    public static PetInfoHUD INSTANCE; public static PetInfoHUD getInstance(){return INSTANCE;}
+    public static PetInfoHUD INSTANCE = new PetInfoHUD();; public static PetInfoHUD getInstance(){return INSTANCE;}
 
     static {
-        INSTANCE = new PetInfoHUD();
-
         // set default hud values, since this class is a bit more complex
         INSTANCE.petInfo = new HashMap<>();
         INSTANCE.petInfo.put("Pet", Text.literal("Golden Dragon [Lv 200]"));
@@ -25,7 +23,6 @@ public class PetInfoHUD extends FeatureHud {
         INSTANCE.petInfo.put("Pet XP", Text.literal("0/0 (100%)"));
     }
 
-    @Override
     public void init() {
         INSTANCE.activeZones = TabList.GeneralInfo.ALL; // all zones
         // add self as listener
@@ -34,7 +31,6 @@ public class PetInfoHUD extends FeatureHud {
     }
 
     // make sure not to run without screen
-    @Override
     public HudManager.HudElement getDefaultElement(){
         MutableText displayText = Text.empty().append(TextUtils.strip(petInfo.get("Pet"))).append(Text.literal("\n")).append(TextUtils.strip(petInfo.get("Pet XP")));
         defaultElement = HudManager.makeHudElement(
@@ -47,8 +43,6 @@ public class PetInfoHUD extends FeatureHud {
         );
         return defaultElement;
     }
-
-
 
     public void updateElement() {
 //        displayString = "[" + petInfo.get("Pet LV") + "] " + petInfo.get("Pet") + "\n" + petInfo.get("Pet XP");
@@ -72,8 +66,7 @@ public class PetInfoHUD extends FeatureHud {
     }
 
     @Override
-    public void onTabUpdate(String key, Text data) {
-        super.onTabUpdate(key, data);
+    public void onTabUpdateImplemented(String key, Text data) {
         if(notVeryOn()) { // wow nested if, such bad programmer
             if(currentElement != null && currentElement.visible()){
                 currentElement.setVisible(false);
@@ -86,6 +79,5 @@ public class PetInfoHUD extends FeatureHud {
         } else {
             System.out.println("PetInfoHUD received unknown key: " + key + " with data: " + data);
         }
-
     }
 }

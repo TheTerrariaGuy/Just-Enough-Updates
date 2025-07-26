@@ -2,6 +2,7 @@ package jeu.mixin.client;
 
 import jeu.features.GlowingMushroomDetector;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +21,9 @@ public class WorldMixin {
             if (!oldState.isAir() && newState.isAir()) {
                 GlowingMushroomDetector.INSTANCE.onBlockUpdate(pos);
             }
+//            if(!oldState.isOf(Blocks.BEDROCK) && newState.isOf(Blocks.BEDROCK)){ // something changing to bedrock
+//                // TODO: implement dia mining assist
+//            }
         }
     }
 }

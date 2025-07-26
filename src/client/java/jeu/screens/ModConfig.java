@@ -26,27 +26,82 @@ public class ModConfig {
 //        put("Suppress Warnings in Logs", SuppressWarningsInLogs.class);
     }};
 
+    /*
+        Categories:
+        - General
+        - Farming
+        - Foraging
+        - Mining
+        - Fishing
+        - Combat
+        - Dungeons
+        - Misc
+     */
+
     // these are default values
-    public static Config[] features = new Config[]{
-            // toggles
-            new Config("toggle", "Chat Copy", "Ctrl + Click to copy chat", true),
-            new Config("toggle", "Party Commands", "!ptme and instance joining commands (!f0/1/2/3/4/5/6/7, !m1/2/3/4/5/6/7, !t1/2/3/4/5)", true),
-            new Config("toggle", "Dungeon Party Finder Stats", "Displays total secrets and runs across all profiles for incoming party finder members", true),
-            new Config("toggle", "Glowing Mushroom Highlight", "Highlights glowing mushrooms in the glowing mushroom cave.", true),
+    public static Config[] features = new Config[] {
+        // toggles
+        new Config(
+            "toggle",
+            "Chat Copy",
+            "Ctrl + Click to copy chat",
+            "General",
+            true
+        ),
+        new Config(
+            "toggle",
+            "Party Commands",
+            "!ptme and instance joining commands (!f0/1/2/3/4/5/6/7, !m1/2/3/4/5/6/7, !t1/2/3/4/5)",
+            "General",
+            true
+        ),
+        new Config(
+            "toggle",
+            "Dungeon Party Finder Stats",
+            "Displays total secrets and runs across all profiles for incoming party finder members",
+            "Dungeons",
+            true
+        ),
+        new Config(
+            "toggle",
+            "Glowing Mushroom Highlight",
+            "Highlights glowing mushrooms in the glowing mushroom cave.",
+            "Fishing",
+            true
+        ),
 
-            // hud toggles
-            new Config("hudToggle", "Pet HUD", "Displays information for currently active pet (requires pet tab widget /tab for more information)", true),
-                new Config("Pet HUD X", 550),
-                new Config("Pet HUD Y", 480),
-            new Config("hudToggle", "Tree Progress", "Displays information for nearby trees", true),
-                new Config("Tree Progress X", 320),
-                new Config("Tree Progress Y", 280),
-            new Config("hudToggle", "Pest HUD", "Displays information for pest cooldown", true),
-                new Config("Pest HUD X", 320),
-                new Config("Pest HUD Y", 280),
+        // hud toggles
+        new Config(
+            "hudToggle",
+            "Pet HUD",
+            "Displays information for currently active pet (requires pet tab widget /tab for more information)",
+            "General",
+            true
+        ),
+            new Config("Pet HUD X", 550),
+            new Config("Pet HUD Y", 480),
+        new Config(
+            "hudToggle",
+            "Tree Progress",
+            "Displays information for nearby trees",
+            "Foraging",
+            true
+        ),
+            new Config("Tree Progress X", 320),
+            new Config("Tree Progress Y", 280),
+        new Config(
+            "hudToggle",
+            "Pest HUD",
+            "Displays information for pest cooldown",
+            "Farming",
+            true
+        ),
+            new Config("Pest HUD X", 320),
+            new Config("Pest HUD Y", 280),
 
-            // dev stuff
-//            new Config("toggle", "Suppress Warnings in Logs", "Disables the spammy warns in logs", false)
+
+        // dev stuff
+//        new Config("toggle", "Suppress Warnings in Logs", "Disables the spammy warns in logs", false)
     };
 
 
@@ -131,19 +186,21 @@ public class ModConfig {
             this.type = type;
             this.name = Text.literal(name);
             this.description = Text.literal(description);
+            this.on = true;
         }
-        public Config(String type, String name, String description, boolean on) {
+        public Config(String type, String name, String description, String category, boolean on) {
             this.type = type;
             this.name = Text.literal(name);
             this.description = Text.literal(description);
             this.on = on;
+            this.category = category;
         }
-        public Config(String type, String name, String description, String value) {
-            this.type = type;
-            this.name = Text.literal(name);
-            this.description = Text.literal(description);
-            this.value = value;
-        }
+//        public Config(String type, String name, String description, String value) {
+//            this.type = type;
+//            this.name = Text.literal(name);
+//            this.description = Text.literal(description);
+//            this.value = value;
+//        }
 
         // this config will only store a number, idk if this is most efficient
         // TODO refactor into hashmap across all?

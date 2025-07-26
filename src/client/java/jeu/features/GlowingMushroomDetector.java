@@ -11,6 +11,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashSet;
@@ -26,9 +27,7 @@ public class GlowingMushroomDetector extends Feature {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(this::run);
     }
 
-//    private static void runInstance(WorldRenderContext context){
-//        INSTANCE.run(context);
-//    }
+    public void onTabUpdateImplemented(String channel, Text info) {}
 
     public void onParicleAdd(ParticleEffect parameters, double x, double y, double z){
         if(notVeryOn()) return;
@@ -41,7 +40,7 @@ public class GlowingMushroomDetector extends Feature {
 //                + ", Particle type: " + Registries.PARTICLE_TYPE.getId(parameters.getType()));
 
         if(world.getBlockState(pos).isOf(Blocks.BROWN_MUSHROOM) || world.getBlockState(pos).isOf(Blocks.RED_MUSHROOM)) {
-            System.out.println("Found Glowing Mushroom At: " + pos.toShortString());
+//            System.out.println("Found Glowing Mushroom At: " + pos.toShortString());
             shrooms.add(pos);
             return;
         }
@@ -55,7 +54,6 @@ public class GlowingMushroomDetector extends Feature {
 //            shrooms.add(pos.up());
 //            return;
 //        }
-//
 
     }
 

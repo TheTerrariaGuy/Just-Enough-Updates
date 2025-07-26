@@ -13,6 +13,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -35,6 +36,10 @@ public class TreeProgressHUD extends FeatureHud {
 
     @Override
     public void init(){
+        INSTANCE.activeZones = new HashSet<>(){{
+            add("Galatea");
+        }};
+
         tickCount = 0;
         
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -45,6 +50,8 @@ public class TreeProgressHUD extends FeatureHud {
             }
         });
     }
+
+    public void onTabUpdateImplemented(String channel, Text info) {}
 
     public void updateElement(){
         if (MinecraftClient.getInstance().player == null) return;

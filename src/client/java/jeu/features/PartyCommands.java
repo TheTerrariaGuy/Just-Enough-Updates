@@ -4,6 +4,7 @@ import jeu.JustEnoughUpdatesClient;
 import jeu.oopShits.Feature;
 import jeu.terralib.CommandUtils;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.minecraft.text.Text;
 
 import java.util.HashMap;
 
@@ -189,6 +190,8 @@ public class PartyCommands extends Feature {
 
         });
     }
+
+    public void onTabUpdateImplemented(String channel, Text info) {}
 
     private String cleanUsername(String username) {
         // Remove any leading or trailing whitespace and special characters

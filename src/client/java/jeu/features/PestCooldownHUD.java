@@ -59,9 +59,7 @@ public class PestCooldownHUD extends FeatureHud {
         );
     }
 
-    @Override
-    public void onTabUpdate(String key, Text data) {
-        super.onTabUpdate(key, data);
+    public void onTabUpdateImplemented(String key, Text data) {
 //        System.out.println(key);
         if(pestInfo.containsKey(key)) {
             pestInfo.put(key, data);

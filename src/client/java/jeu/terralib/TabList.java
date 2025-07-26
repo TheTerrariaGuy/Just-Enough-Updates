@@ -1,5 +1,6 @@
 package jeu.terralib;
 
+import jeu.DevShits;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.text.Text;
 
@@ -52,6 +53,7 @@ public class TabList {
 
         @Override
         public void onTabUpdate(String key, Text data) {
+            DevShits.debugSend("Lobby swap");
             if("Area".equals(key.strip())){
                 area = data.getString().split(": ")[1].strip();
             }
@@ -61,6 +63,7 @@ public class TabList {
 
     public static void lobbyChange(){
         fireEvent("Area", Text.empty().append(Text.literal("none"))); // sets to none
+        fireEvent("LobbySwap", Text.empty().append(Text.literal(""))); // pings classes at lobbyswap
         GeneralInfo.area = "none"; // sets to none
     }
 
@@ -69,6 +72,7 @@ public class TabList {
 
     public static void addListener(String channel, TabListener listener) {
         listenersByChannel.computeIfAbsent(channel, k -> new ArrayList<>()).add(listener);
+//        System.out.println("current listener of " + channel + " length: " + listenersByChannel.get(channel).size());
     }
 
     public static void removeListener(String channel, TabListener listener) {
@@ -83,10 +87,18 @@ public class TabList {
 
     public static void fireEvent(String channel, Text data) {
         List<TabListener> listeners = listenersByChannel.get(channel);
-//        System.out.println("Firing event on channel: " + channel + " with data: " + data);
+//        System.out.println("Firing event on channel: " + channel + ", with data: " + data.getString() + ", channel len: " + listeners.size());
         if (listeners != null) {
-            for (TabListener listener : new ArrayList<>(listeners)) {
-                listener.onTabUpdate(channel, data);
+            var ls = listeners.iterator();
+            try {
+                while (ls.hasNext()) {
+                    TabListener listener = ls.next();
+//                    System.out.println("firing event " + channel + " for listener " + listener.getClass().getName());
+                    listener.onTabUpdate(channel, data);
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
             }
         }
     }

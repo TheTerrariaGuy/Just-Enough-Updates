@@ -39,8 +39,8 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 		System.out.println("Username: " + USERNAME);
 		initUUID();
 		loadFeatures();
-		Configurator.setLevel("Minecraft", Level.WARN);
-		System.out.println("[JEU] Disabled goofy yggdrasil (and others :p) warnings, ur welcome");
+//		Configurator.setLevel("Minecraft", Level.ERROR);
+//		System.out.println("[JEU] Disabled goofy yggdrasil (and others :p) warnings, ur welcome");
 
 		HudManager.init();
 		ModCommands.init();
@@ -53,27 +53,12 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 			try {
 				Class<? extends Feature> c = feats.get(key);
 				Feature instance = (Feature) c.getMethod("getInstance").invoke(null);
-				instance.init();
+				instance.initCall();
 			}
 			catch (Exception e){
 				System.out.println("error: " + e.getMessage());
 			}
 		}
-
-//		GlowingMushroomDetector.on();
-//		GlowingMushroomDetector.init();
-//		PetInfoHUD.init();
-//		PestCooldownHUD.init();
-//		PartyCommands.init();
-//		TreeProgressHUD.init();
-
-//		WorldRenderEvents.START.register(context -> {
-//			if (GL.getCapabilities().GL_KHR_debug) {
-//				glDisable(GL_DEBUG_OUTPUT);
-//				glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-//				System.out.println("[JEU] OpenGL debug output disabled, you are welcome.");
-//			}
-//		});
 
 	}
 	private void initUUID(){
@@ -106,25 +91,15 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 			}
 		}
 
-//		PartyCommands.off();
-//		PetInfoHUD.off();
-//		PestCooldownHUD.off();
-//		TreeProgressHUD.off();
-
 		loadFeatures();
-
 	}
 	public static void loadFeatures(){
 		ModConfig.load();
 		if(ModConfig.configs.isEmpty() || ModConfig.configs.keySet().size() < ModConfig.features.length) ModConfig.resetToDefault();
-//		HashMap<String, ModConfig.Config> confs = (HashMap<String, ModConfig.Config>) ModConfig.configs;
-//		mixinEnabled = new HashMap<>();
-//		mixinEnabled.put("ChatHudMixin", confs.get("Chat Copy").on);
-//		mixinEnabled.put("PartyFinderStatsMixin", confs.get("Dungeon Party Finder Stats").on);
-
 		//  enable
 		HashMap<String, Class<? extends Feature>> feats = ModConfig.featureClasses;
 		for (String key : feats.keySet()) {
+			if(!ModConfig.configs.get(key).on) continue;
 			try {
 				Class<? extends Feature> c = feats.get(key);
 				Feature instance = (Feature) c.getMethod("getInstance").invoke(null);

@@ -1,5 +1,6 @@
 package jeu.oopShits;
 
+import jeu.DevShits;
 import jeu.screens.ModConfig;
 import jeu.terralib.TabList;
 import net.minecraft.text.Text;
@@ -33,10 +34,13 @@ public abstract class Feature implements TabList.TabListener {
         enabled = !enabled;
     }
 
-    public void init() {
-        System.out.println("no init override: " + this.getClass().getName());
+    public void initCall() {
         TabList.addListener("Area", this);
+//        System.out.println(this.getClass().getName() + " is now listening to Area channel");
+        init();
     }
+
+    public abstract void init();
 
     public HashSet<String> activeZones = TabList.GeneralInfo.ALL; // default all
 
@@ -44,10 +48,23 @@ public abstract class Feature implements TabList.TabListener {
 
     @Override
     public void onTabUpdate(String channel, Text info){
-        if(activeZones.contains(info.getString().split(":")[1].strip())){
-            inZone = true;
-        }else{
-            inZone = false;
+//        System.out.println(this.getClass().getName() + " received " + info.getString() + " at " + channel);
+        try {
+            if ("Area".equals(channel.strip())) {
+                if (!info.getString().contains(":")) {
+                    System.out.println("error: no colon detected");
+                } else if (activeZones.contains(info.getString().split(":")[1].strip())) {
+                    inZone = true;
+                } else {
+                    inZone = false;
+                }
+            }
         }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        onTabUpdateImplemented(channel, info);
+//        DevShits.debugSend(this.getClass().getName() + " is in zone: " + inZone);
     }
+    public abstract void onTabUpdateImplemented(String channel, Text info);
 }
