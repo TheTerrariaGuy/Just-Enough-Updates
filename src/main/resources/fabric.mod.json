@@ -2,14 +2,14 @@
 	"schemaVersion": 1,
 	"id": "just-enough-updates",
 	"version": "${version}",
-	"name": "JustEnoughUpdates",
+	"name": "Just Enough Updates",
 	"description": "QOL mod for Hypixel Skyblock.",
 	"authors": [
-		"Me!"
+		"The_Terrria_Guy"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://jeu-mod.vercel.app/",
+		"sources": "https://github.com/TheTerrariaGuy/Just-Enough-Updates"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/just-enough-updates/icon.png",
