@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class PetInfoHUD extends FeatureHud {
     private PetInfoHUD(){};
     private HashMap<String, Text> petInfo = new HashMap<>();
-    public static PetInfoHUD INSTANCE = new PetInfoHUD();; public static PetInfoHUD getInstance(){return INSTANCE;}
+    public static PetInfoHUD INSTANCE = new PetInfoHUD(); public static PetInfoHUD getInstance(){return INSTANCE;}
 
     static {
         // set default hud values, since this class is a bit more complex

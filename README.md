@@ -18,16 +18,16 @@ Welcome to Just-Enough-Updates, a mod with smaller features which compliment exi
 - Party Finder Overview: quick summaries of incoming party finder members (total secrets + total runs across all profiles).
 - Pet HUD: displays info about your active pet based off of tab data.
 - Nearby Tree Progress display: displays the progress of nearby trees in Galatea.
+- Glowing Mushroom Finder: highlights glowing mushrooms
+- Sweep Display: Displays info about current sweep, logs broken, and penalties (needs sweep message, talk to Swoop)
 
 # Upcoming Features
 
-- Glowing Mushroom Finder: highlights glowing mushrooms
+
 - Pickaxe Cooldown Display
 - Mining Assistance: etherwarp waypoints + target block highlight
 - Vanguard Shaft Alert: alerts player for vanguard shafts
 - Remaining Lapis Corpses Display
-- Settings Filtering
-- 
 
 # Update Log
 - 6/12/2025: initial release

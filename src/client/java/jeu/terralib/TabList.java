@@ -1,6 +1,7 @@
 package jeu.terralib;
 
 import jeu.DevShits;
+import jeu.mixin.client.PartyFinderStatsMixin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.text.Text;
 

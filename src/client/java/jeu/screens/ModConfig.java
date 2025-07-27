@@ -23,6 +23,7 @@ public class ModConfig {
         put("Tree Progress", TreeProgressHUD.class);
         put("Pest HUD", PestCooldownHUD.class);
         put("Glowing Mushroom Highlight", GlowingMushroomDetector.class);
+        put("Sweep Display", SweepDisplay.class);
 //        put("Suppress Warnings in Logs", SuppressWarningsInLogs.class);
     }};
 
@@ -98,8 +99,15 @@ public class ModConfig {
         ),
             new Config("Pest HUD X", 320),
             new Config("Pest HUD Y", 280),
-
-
+        new Config(
+                "hudToggle",
+                "Sweep Display",
+                "Displays sweep based on sweep message from swoop (removes the message).",
+                "Foraging",
+                true
+        ),
+            new Config("Sweep Display X", 320),
+            new Config("Sweep Display Y", 280),
         // dev stuff
 //        new Config("toggle", "Suppress Warnings in Logs", "Disables the spammy warns in logs", false)
     };

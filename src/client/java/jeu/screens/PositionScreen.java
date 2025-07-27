@@ -133,6 +133,7 @@ public class PositionScreen extends Screen {
         ModConfig.save();
         if(added){
             HudManager.removeHudElement(HudManager.getElement(selected)); // cooked
+            System.out.println("removing hud element");
         }
         if (this.client != null) {
             this.client.setScreen(new SettingsGUI(scroll));

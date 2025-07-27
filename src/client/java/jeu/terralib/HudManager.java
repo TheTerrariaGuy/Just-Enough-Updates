@@ -1,5 +1,6 @@
 package jeu.terralib;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -11,11 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 public class HudManager {
-    private static final Map<String, HudElement> elements = new HashMap<>();
+    private static Map<String, HudElement> elements = new HashMap<>();
     private HudManager() {}
 
     // TODO: use iterators to loop render
     public static void init() {
+        ClientPlayConnectionEvents.DISCONNECT.register((client, handler) -> {
+            elements = new HashMap<>();
+        });
 //        System.out.println("wow such great init");
         // maybe use later
 
