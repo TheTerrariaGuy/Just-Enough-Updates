@@ -88,7 +88,8 @@ public class TreeProgressHUD extends FeatureHud {
                 ModConfig.configs.get("Tree Progress X").intValue,
                 ModConfig.configs.get("Tree Progress Y").intValue,
                 3,
-                0xFFFFFF
+                0xFFFFFF,
+                !notVeryOn()
         );
     }
 

@@ -23,7 +23,8 @@ public class ModConfig {
         put("Tree Progress", TreeProgressHUD.class);
         put("Pest HUD", PestCooldownHUD.class);
         put("Glowing Mushroom Highlight", GlowingMushroomDetector.class);
-        put("Sweep Display", SweepDisplay.class);
+        put("Sweep Display", SweepDisplayHUD.class);
+        put("Pickaxe Cooldown", PickaxeCooldownHUD.class);
 //        put("Suppress Warnings in Logs", SuppressWarningsInLogs.class);
     }};
 
@@ -108,6 +109,17 @@ public class ModConfig {
         ),
             new Config("Sweep Display X", 320),
             new Config("Sweep Display Y", 280),
+        new Config(
+                "hudToggle",
+                "Pickaxe Cooldown",
+                "Displays pickaxe ability cooldown.",
+                "Mining",
+                true
+        ),
+            new Config("Pickaxe Cooldown X", 320),
+            new Config("Pickaxe Cooldown Y", 280),
+
+
         // dev stuff
 //        new Config("toggle", "Suppress Warnings in Logs", "Disables the spammy warns in logs", false)
     };

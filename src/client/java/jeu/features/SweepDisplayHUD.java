@@ -10,8 +10,8 @@ import net.minecraft.util.Formatting;
 
 import java.util.HashSet;
 
-public class SweepDisplay extends FeatureHud implements ChatStuff.ChatListener {
-    public static SweepDisplay INSTANCE = new SweepDisplay(); public static SweepDisplay getInstance(){return INSTANCE;}
+public class SweepDisplayHUD extends FeatureHud implements ChatStuff.ChatListener {
+    public static SweepDisplayHUD INSTANCE = new SweepDisplayHUD(); public static SweepDisplayHUD getInstance(){return INSTANCE;}
     private static double lastSweep = -1;
     private static String lastPenalty = "none";
     private static double lastLogs = -1;
@@ -63,7 +63,7 @@ public class SweepDisplay extends FeatureHud implements ChatStuff.ChatListener {
 
     @Override
     public HudManager.HudElement getDefaultElement() {
-        return HudManager.makeHudElement(
+        defaultElement =  HudManager.makeHudElement(
                 "Sweep Display",
                 Text.empty().append(Text.literal("Sweep: 999∮ (99 Logs, -99% Penalty)")),
                 ModConfig.configs.get("Sweep Display X").intValue,
@@ -71,6 +71,7 @@ public class SweepDisplay extends FeatureHud implements ChatStuff.ChatListener {
                 3,
                 0xFFFFFF
         );
+        return defaultElement;
     }
 
     @Override
@@ -91,7 +92,8 @@ public class SweepDisplay extends FeatureHud implements ChatStuff.ChatListener {
                 ModConfig.configs.get("Sweep Display X").intValue,
                 ModConfig.configs.get("Sweep Display Y").intValue,
                 3,
-                0xFFFFFF
+                0xFFFFFF,
+                !notVeryOn()
         );
 
 

@@ -1,7 +1,7 @@
 package jeu.terralib;
 
 import jeu.DevShits;
-import jeu.mixin.client.PartyFinderStatsMixin;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.text.Text;
 
@@ -13,7 +13,11 @@ public class TabList {
     }
 
     public static void init(){
+        System.out.println("init");
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            lobbyChange();
+        });
+        ClientPlayConnectionEvents.INIT.register((handler, client) -> {
             lobbyChange();
         });
     }
@@ -40,6 +44,8 @@ public class TabList {
             add("Dungeon Hub");
             add("Rift Dimension"); // TODO: Check later
             add("Backwater Bayou");
+            add("Galatea");
+            add("Dungeon Hub");
         }};
 
         private static String area;

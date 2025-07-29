@@ -55,7 +55,8 @@ public class PestCooldownHUD extends FeatureHud {
                 ModConfig.configs.get("Pest HUD X").intValue,
                 ModConfig.configs.get("Pest HUD Y").intValue,
                 3,
-                0xFFFFFF
+                0xFFFFFF,
+                !notVeryOn()
         );
     }
 

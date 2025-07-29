@@ -2,6 +2,7 @@ package jeu;
 
 import com.mojang.brigadier.Command;
 import jeu.features.GlowingMushroomDetector;
+import jeu.features.PetInfoHUD;
 import jeu.screens.SettingsGUI;
 import jeu.terralib.CommandUtils;
 import jeu.terralib.HologramUtils;
@@ -37,17 +38,8 @@ public class DevShits implements TabList.TabListener {
         TabList.addListener("Area", INSTANCE);
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            registerCommand(dispatcher, "shroom", () -> {
-//                CommandUtils.sendDirectToChat("Sigma Stands on the field:");
-//                ArrayList<ArmorStandEntity> holograms = HologramUtils.getAllHolograms();
-//                for(ArmorStandEntity h : holograms){
-//                    String standInfo = "";
-//                    standInfo += "Name: " + h.getName().getString();
-//                    standInfo += ", HitboxEnabled: " + !h.isMarker();
-//                    standInfo += ", Position: " + h.getBlockPos().getX() + " " + h.getBlockPos().getY() + " " + h.getBlockPos().getZ();
-//                    CommandUtils.sendDirectToChat(standInfo);
-//                }
-                debugSend("shrooms on?: " + GlowingMushroomDetector.INSTANCE.notVeryOn());
+            registerCommand(dispatcher, "hud", () -> {
+                debugSend("pets??: " + PetInfoHUD.INSTANCE.currentElement.visible());
             }, 3);
             registerCommand(dispatcher, "particles", () -> {
                 logParticles = !logParticles;

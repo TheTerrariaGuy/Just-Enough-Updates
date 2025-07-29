@@ -61,18 +61,19 @@ public class PetInfoHUD extends FeatureHud {
                 ModConfig.configs.get("Pet HUD X").intValue,
                 ModConfig.configs.get("Pet HUD Y").intValue,
                 3,
-                0xFFFFFF
+                0xFFFFFF,
+                !notVeryOn()
         );
     }
 
     @Override
     public void onTabUpdateImplemented(String key, Text data) {
-        if(notVeryOn()) { // wow nested if, such bad programmer
-            if(currentElement != null && currentElement.visible()){
-                currentElement.setVisible(false);
-                return;
-            }
-        }
+//        if(notVeryOn()) { // wow nested if, such bad programmer
+//            if(currentElement != null && currentElement.visible()){
+//                currentElement.setVisible(false);
+//                return;
+//            }
+//        }
         if(petInfo.containsKey(key)) {
             petInfo.put(key, data);
             updateElement();

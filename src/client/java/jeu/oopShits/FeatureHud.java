@@ -1,5 +1,6 @@
 package jeu.oopShits;
 
+import jeu.DevShits;
 import jeu.screens.ModConfig;
 import jeu.terralib.HudManager;
 import jeu.terralib.TabList;
@@ -17,8 +18,11 @@ public abstract class FeatureHud extends Feature  {
     public void onTabUpdate(String channel, Text info){
         if("Area".equals(channel) && currentElement != null) {
             if (activeZones.contains(info.getString().split(":")[1].strip())) {
+//                DevShits.debugSend("enabled: " + this.getClass().getName());
                 currentElement.setVisible(true);
+                updateElement();
             } else {
+//                DevShits.debugSend("disabled: " + this.getClass().getName());
                 currentElement.setVisible(false);
             }
         }
@@ -27,7 +31,13 @@ public abstract class FeatureHud extends Feature  {
 
     public void on(){
         super.on();
-        if(currentElement != null) currentElement.setVisible(true);
+//        if(currentElement != null) currentElement.setVisible(true);
+        if (activeZones.contains(TabList.GeneralInfo.getArea())) {
+//            DevShits.debugSend("enabled: " + this.getClass().getName());
+            currentElement.setVisible(true);
+        } else {
+            currentElement.setVisible(false);
+        }
         updateElement();
     }
 

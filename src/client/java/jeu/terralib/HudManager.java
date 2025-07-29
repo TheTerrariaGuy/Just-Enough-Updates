@@ -54,7 +54,7 @@ public class HudManager {
         e.updateBox(x - e.boxElement.width/2 + e.padding, y, e.boxElement.width, e.boxElement.height, e.boxElement.color);
     }
 
-    public static HudElement addHudElement(String name, Text content, int x, int y, int padding, int color) {
+    public static HudElement addHudElement(String name, Text content, int x, int y, int padding, int color, boolean v) {
 //        System.out.println("Adding HUD element: " + name + " at (" + x + ", " + y + ") with content: " + content);
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return null;
@@ -62,6 +62,7 @@ public class HudManager {
         HudElement.TextHudElement text = new HudElement.TextHudElement(content, x - xOffset, y, color);
         HudElement.BoxHudElement box = new HudElement.BoxHudElement(text, padding, 0x55000000);
         HudElement element = new HudElement(name, box, text, padding);
+        element.visible = v;
         elements.put(name, element);
 //        System.out.println("HUD element added, elements size: " + elements.size());
         return element;
@@ -74,6 +75,7 @@ public class HudManager {
         HudElement.TextHudElement text = new HudElement.TextHudElement(content, x - xOffset, y, color);
         HudElement.BoxHudElement box = new HudElement.BoxHudElement(text, padding, 0x55000000);
         HudElement element = new HudElement(name, box, text, padding);
+        element.visible = true;
         return element;
     }
 

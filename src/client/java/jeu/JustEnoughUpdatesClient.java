@@ -5,6 +5,7 @@ import jeu.screens.ModConfig;
 import jeu.terralib.APIUtils;
 import jeu.terralib.HologramUtils;
 import jeu.terralib.HudManager;
+import jeu.terralib.TabList;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
@@ -45,6 +46,7 @@ public class JustEnoughUpdatesClient implements ClientModInitializer {
 		HudManager.init();
 		ModCommands.init();
 		HologramUtils.init();
+		TabList.init();
 
 //		if(ModConfig.configs.isEmpty() || ModConfig.configs.keySet().size() < ModConfig.features.length) ModConfig.resetToDefault();
 

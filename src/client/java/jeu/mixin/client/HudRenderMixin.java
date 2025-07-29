@@ -25,6 +25,7 @@ public class HudRenderMixin {
         ArrayList<HudManager.HudElement> elements = new ArrayList<>(HudManager.getElements());
         for (HudManager.HudElement element : elements) {
             if(element == null) continue;
+            if(!element.visible()) return;
             // ill trust the remover
             element.render(context);
         }
