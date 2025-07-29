@@ -25,7 +25,7 @@ public class PestCooldownHUD extends FeatureHud {
                 3,
                 0xFFFFFF
         );
-        System.out.println("Pest Cooldown: created gui");
+//        System.out.println("Pest Cooldown: created gui");
         return defaultElement;
     }
 

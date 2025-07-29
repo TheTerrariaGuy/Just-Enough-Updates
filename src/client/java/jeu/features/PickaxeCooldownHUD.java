@@ -3,6 +3,7 @@ package jeu.features;
 import jeu.DevShits;
 import jeu.oopShits.FeatureHud;
 import jeu.screens.ModConfig;
+import jeu.terralib.ChatStuff;
 import jeu.terralib.HudManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -16,7 +17,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.HashSet;
 
-public class PickaxeCooldownHUD extends FeatureHud {
+public class PickaxeCooldownHUD extends FeatureHud implements ChatStuff.ChatListener {
     public static PickaxeCooldownHUD INSTANCE = new PickaxeCooldownHUD(); public static PickaxeCooldownHUD getInstance(){return INSTANCE;}
     private static HashSet<String> pickaxeAbilities = new HashSet<>(){{
         add("Ability: Mining Speed Boost  RIGHT CLICK");
@@ -24,6 +25,18 @@ public class PickaxeCooldownHUD extends FeatureHud {
         add("Ability: Maniac Miner  RIGHT CLICK");
     }};
     private static int cdTicks;
+
+
+    public boolean onMessage(Text t){
+        String s = t.getString();
+        if(s.matches("^Your Pickaxe ability is on cooldown for .*s\\.")){
+            int emp = Integer.parseInt(s.replace("Your Pickaxe ability is on cooldown for", "").replace(".", "").strip()) * 20;
+            if(Math.abs(emp - cdTicks) > 20){
+                cdTicks = emp;
+            }
+        }
+        return false;
+    }
 
     @Override
     public HudManager.HudElement getDefaultElement() {

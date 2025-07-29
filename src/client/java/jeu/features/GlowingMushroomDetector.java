@@ -61,7 +61,7 @@ public class GlowingMushroomDetector extends Feature {
         if(notVeryOn()) return;
         if(!enabled) return;
         if(shrooms.contains(pos)){
-            System.out.println("removing shroom at: " + pos.toShortString());
+//            System.out.println("removing shroom at: " + pos.toShortString());
             shrooms.remove(pos);
         }
 //        DevShits.debugSend("block update at: " + pos.getX() + ", " + pos.getY() + ", " +pos.getZ());

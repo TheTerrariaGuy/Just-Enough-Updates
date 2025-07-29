@@ -39,11 +39,11 @@ public class PositionScreen extends Screen {
             try {
                 if(!HudManager.hasElement(selected)){
                     Class<? extends Feature> c = ModConfig.featureClasses.get(selected);
-                    System.out.println(c.getName());
+//                    System.out.println(c.getName());
                     FeatureHud instance = (FeatureHud) c.getMethod("getInstance").invoke(null);
-                    System.out.println(instance);
+//                    System.out.println(instance);
                     HudManager.HudElement ele = instance.getDefaultElement();
-                    System.out.println(ele);
+//                    System.out.println(ele);
 //                HudManager.HudElement ele = (HudManager.HudElement) c.getMethod("getDefaultElement").invoke(instance);
 //                System.out.println("Created hud element: " + ele.name);
                     HudManager.addHudElement(ele);
@@ -133,7 +133,7 @@ public class PositionScreen extends Screen {
         ModConfig.save();
         if(added){
             HudManager.removeHudElement(HudManager.getElement(selected)); // cooked
-            System.out.println("removing hud element");
+//            System.out.println("removing hud element");
         }
         if (this.client != null) {
             this.client.setScreen(new SettingsGUI(scroll));

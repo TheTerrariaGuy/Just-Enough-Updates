@@ -40,7 +40,7 @@ public class PartyCommands extends Feature {
             PartyMessage processed = parsePartyMessage(msg);
             msg = msg.replace("§.", "");
             if(processed != null){
-                System.out.println("Processed party message: " + processed.message + " | from " + processed.playerName);
+//                System.out.println("Processed party message: " + processed.message + " | from " + processed.playerName);
 //                System.out.println("Is leader: " + isLeader);
                 /*
                     ===== Party Commands =====
@@ -147,7 +147,7 @@ public class PartyCommands extends Feature {
 
             }
             if(msg.matches("^The party was transferred to.+")){
-                System.out.println("Party transfer message detected, setting isLeader");
+//                System.out.println("Party transfer message detected, setting isLeader");
                 String username = null;
                 if(msg.contains(" by ")){
                     username = message.getString().replace("The party was transferred to ", "").split("by")[0].strip();
@@ -162,29 +162,29 @@ public class PartyCommands extends Feature {
                 }
             }
             if(msg.matches("^(.{1,50}) has promoted (.{1,50}) to Party Leader.*")){
-                System.out.println("Party transfer message detected, setting isLeader");
+//                System.out.println("Party transfer message detected, setting isLeader");
                 String username = msg.split("has promoted")[1].split("to Party Leader")[0].strip(); // the person who got promoted
                 username = cleanUsername(username);
                 isLeader = username.equals(JustEnoughUpdatesClient.USERNAME);
             }
             if(msg.matches("^You have joined (.{1,50})'s party!$")){
-                System.out.println("Joined party message detected, setting isLeader to false");
+//                System.out.println("Joined party message detected, setting isLeader to false");
                 isLeader = false;
             }
             if(msg.matches("^You have left the party.$")){
-                System.out.println("Left party message detected, setting isLeader to true");
+//                System.out.println("Left party message detected, setting isLeader to true");
                 isLeader = true;
             }
             if(msg.matches("^The party was disbanded because all invites expired and the party was empty.$")){
-                System.out.println("Disband message detected, setting isLeader to true");
+//                System.out.println("Disband message detected, setting isLeader to true");
                 isLeader = true;
             }
             if(msg.matches("^([^:]{1,50}) has disbanded the party!")){
-                System.out.println("Disband message detected, setting isLeader to true");
+//                System.out.println("Disband message detected, setting isLeader to true");
                 isLeader = true;
             }
             if(msg.matches("^You are not this party's leader!$")){
-                System.out.println("Not party leader message detected, setting isLeader to false");
+//                System.out.println("Not party leader message detected, setting isLeader to false");
                 isLeader = false;
             }
 

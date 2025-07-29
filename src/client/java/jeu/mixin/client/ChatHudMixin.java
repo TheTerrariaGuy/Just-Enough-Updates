@@ -29,7 +29,7 @@ public class ChatHudMixin {
             if(!msgStr.isEmpty()){
                 MinecraftClient.getInstance().keyboard.setClipboard(msgStr);
                 Notif.queueNotif("Copied Text", msgStr);
-                System.out.println("copied text:" + msgStr);
+//                System.out.println("copied text:" + msgStr);
             }else{
                 System.out.println("warn: copied text is empty, this is probably not what you wanted");
             }

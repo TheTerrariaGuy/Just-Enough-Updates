@@ -13,7 +13,7 @@ public class TabList {
     }
 
     public static void init(){
-        System.out.println("init");
+//        System.out.println("init");
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             lobbyChange();
         });

@@ -47,7 +47,7 @@ public class PetInfoHUD extends FeatureHud {
     public void updateElement() {
 //        displayString = "[" + petInfo.get("Pet LV") + "] " + petInfo.get("Pet") + "\n" + petInfo.get("Pet XP");
         MutableText displayText = Text.empty().append(TextUtils.strip(petInfo.get("Pet"))).append(Text.literal("\n")).append(TextUtils.strip(petInfo.get("Pet XP")));
-        System.out.println("Updating Pet Info HUD with: " + displayText.getString());
+//        System.out.println("Updating Pet Info HUD with: " + displayText.getString());
         // use \n as delimiter for new line
         if(currentElement != null) {
             // initialize the currentElement if it was null
